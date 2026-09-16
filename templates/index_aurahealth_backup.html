@@ -3407,6 +3407,10 @@
                 },
 
                 getEmergencyWebUrl() {
+                    if (window.location.hostname.includes('github.io')) {
+                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
+                    }
                     if (this.customHostUrl && this.customHostUrl.trim()) {
                         let base = this.customHostUrl.trim().replace(/\/$/, '');
                         if (!base.startsWith('http://') && !base.startsWith('https://')) {
