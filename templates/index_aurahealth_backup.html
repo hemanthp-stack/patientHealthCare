@@ -2264,18 +2264,23 @@
                     <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30">● LIVE ON 5G</span>
                 </div>
                 <div class="flex flex-wrap gap-1.5">
+                    <button type="button" @click="customHostUrl = ''; renderEnlargedQr()"
+                            :class="!customHostUrl ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
+                            class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
+                        <span>🚀</span> <span>Live Web Pass (Auto-Detect)</span>
+                    </button>
                     <button type="button" @click="customHostUrl = (liveTunnelUrl || 'https://6d9ac3e81ae4a8.lhr.life'); renderEnlargedQr()"
                             :class="customHostUrl.includes('lhr.life') ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
                             class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
-                        <span>🌐</span> <span>Public 5G Cloud (<span x-text="(liveTunnelUrl || 'active').replace('https://','').replace('http://','')"></span>)</span>
+                        <span>🌐</span> <span>Public 5G Tunnel</span>
                     </button>
                     <button type="button" @click="customHostUrl = (localWifiUrl || 'http://10.212.70.57:8000'); renderEnlargedQr()"
                             :class="customHostUrl.includes('10.212.70.57') || customHostUrl.includes('8000') ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
                             class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
-                        <span>📶</span> <span>Local Wi-Fi (10.212.70.57:8000)</span>
+                        <span>📶</span> <span>Local Wi-Fi (LAN)</span>
                     </button>
                     <button type="button" @click="fetchTunnelStatus()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-medium transition flex items-center gap-1">
-                        <span>🔄</span> <span>Auto-Sync</span>
+                        <span>🔄</span> <span>Sync</span>
                     </button>
                 </div>
                 <div class="flex gap-2 pt-1">
@@ -2393,7 +2398,7 @@
                 <button @click="openEmergencyModal(); showEnlargeQrModal = false;" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
                     <span>👁️</span> <span>Open Full Emergency Data Sheet</span>
                 </button>
-                <button @click="window.open('/emergency/' + currentUser.health_id, '_blank')" class="py-2.5 px-4 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1">
+                <button @click="window.open(getEmergencyWebUrl(), '_blank')" class="py-2.5 px-4 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1">
                     <span>🔗</span> <span>Open Web Pass Tab</span>
                 </button>
                 <button @click="showEnlargeQrModal = false" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">
@@ -2941,7 +2946,7 @@
                 currentQrPayload: '',
                 liveTunnelUrl: 'https://6d9ac3e81ae4a8.lhr.life',
                 localWifiUrl: 'http://10.212.70.57:8000',
-                customHostUrl: 'https://6d9ac3e81ae4a8.lhr.life',
+                customHostUrl: '',
                 tunnelActive: true,
                 qrDisplayMode: 'web', // Default to Live Web Pass so scanning opens saved reports & minor data!,
                 showManualReportModal: false,
@@ -3407,16 +3412,23 @@
                 },
 
                 getEmergencyWebUrl() {
-                    if (window.location.hostname.includes('github.io')) {
-                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
-                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
-                    }
                     if (this.customHostUrl && this.customHostUrl.trim()) {
                         let base = this.customHostUrl.trim().replace(/\/$/, '');
                         if (!base.startsWith('http://') && !base.startsWith('https://')) {
                             base = 'https://' + base;
                         }
+                        if (base.includes('emergency.html')) {
+                            return `${base}?id=${this.currentUser.health_id}`;
+                        }
                         return `${base}/emergency/${this.currentUser.health_id}`;
+                    }
+                    if (window.location.hostname.includes('github.io')) {
+                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
+                    }
+                    if (window.location.protocol.startsWith('http') && window.location.port !== '8000' && !this.liveTunnelUrl) {
+                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
                     }
                     if (this.liveTunnelUrl) {
                         return `${this.liveTunnelUrl}/emergency/${this.currentUser.health_id}`;

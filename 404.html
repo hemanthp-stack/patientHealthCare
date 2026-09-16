@@ -2,19 +2,29 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Redirecting to AuraHealth 360...</title>
+    <title>AuraHealth 360 — Redirecting...</title>
     <script>
-        // Redirect to root index.html
-        var path = window.location.pathname;
-        if (path.includes('emergency')) {
-            window.location.replace('emergency.html' + window.location.search);
-        } else {
-            window.location.replace('index.html' + window.location.search);
-        }
+        (function() {
+            var pathname = window.location.pathname;
+            var origin = window.location.origin;
+            var search = window.location.search;
+            
+            // Base path: e.g. '/healthtech' on github.io, or ''
+            var repoBase = origin.includes('github.io') ? '/healthtech' : '';
+            
+            if (pathname.includes('emergency')) {
+                // Extract health ID from URL path if passed like /emergency/AH-2026-8849-IN
+                var match = pathname.match(/emergency\/([A-Za-z0-9\-_]+)/);
+                var id = match ? match[1] : (new URLSearchParams(search).get('id') || 'AH-2026-8849-IN');
+                window.location.replace(origin + repoBase + '/emergency.html?id=' + encodeURIComponent(id));
+            } else {
+                window.location.replace(origin + repoBase + '/index.html' + search);
+            }
+        })();
     </script>
 </head>
-<body style="background:#020617;color:#fff;font-family:sans-serif;text-align:center;padding:50px;">
+<body style="background:#020617;color:#fff;font-family:sans-serif;text-align:center;padding:60px 20px;">
     <h2>Redirecting to AuraHealth 360...</h2>
-    <p><a href="index.html" style="color:#6366f1;">Click here if not redirected automatically</a></p>
+    <p><a href="index.html" style="color:#6366f1;">Click here if you are not redirected automatically</a></p>
 </body>
 </html>

@@ -613,6 +613,18 @@
                     if (customId) {
                         this.user.health_id = customId;
                     }
+                    try {
+                        const stored = localStorage.getItem('aura_user');
+                        if (stored) {
+                            const parsed = JSON.parse(stored);
+                            if (parsed && parsed.name) {
+                                this.user.name = parsed.name;
+                                if (parsed.phone) this.user.phone = parsed.phone;
+                                if (parsed.health_id && !customId) this.user.health_id = parsed.health_id;
+                                if (parsed.hospital) this.user.hospital = parsed.hospital;
+                            }
+                        }
+                    } catch (e) {}
                 },
                 openReportViewer(record) {
                     this.viewingReport = record;
