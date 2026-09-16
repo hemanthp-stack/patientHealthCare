@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraHealth 360 — Patient Medical Dossier & Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        @media print {
+            .no-print { display: none !important; }
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-16" x-data="emergencyDossierApp()">
+
+    <!-- Top Emergency Header -->
+    <header class="bg-gradient-to-r from-red-950/90 via-slate-900/90 to-indigo-950/90 border-b border-red-500/40 sticky top-0 z-40 backdrop-blur-md px-4 py-3 shadow-xl">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-red-600/40">
+                    🚑
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-mono uppercase bg-red-900/80 text-red-200 px-2 py-0.5 rounded border border-red-700 font-bold">EMERGENCY RESPONDER PASS</span>
+                        <span class="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> VERIFIED
+                        </span>
+                    </div>
+                    <h1 class="text-sm sm:text-base font-black text-white leading-tight">AuraHealth 360 Patient Dossier</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 no-print">
+                <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <span>🖨️</span> <span class="hidden sm:inline">Print</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-4 space-y-4">
+
+        <!-- 1. PATIENT DEMOGRAPHICS & MINOR DATA CARD -->
+        <div class="bg-slate-900/95 border-2 border-indigo-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-mono text-emerald-400 font-bold tracking-wider uppercase bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                            ID: {{ user.health_id }}
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-medium">ABDM Linked</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white mt-1.5">{{ user.name }}</h2>
+                    <p class="text-xs text-slate-400 mt-1">
+                        DOB: {{ user.dob }} • Age: <b class="text-white">{{ user.age }} Years</b> • Gender: <b class="text-white">{{ user.gender }}</b>
+                    </p>
+                </div>
+                <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2.5">
+                    <div class="px-4 py-2 bg-red-600/20 border-2 border-red-500 rounded-2xl text-center shadow-md">
+                        <span class="text-[9px] uppercase tracking-wider font-bold text-red-300 block">Blood Group</span>
+                        <span class="text-2xl font-black text-red-400 leading-none">{{ user.blood_group }}</span>
+                    </div>
+                    <span class="text-[11px] font-medium text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/30">
+                        ✓ {{ user.organ_donor }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Contact & Address Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 text-xs">
+                <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
+                    <span class="text-slate-400 font-medium block text-[11px]">📱 Primary Mobile Number</span>
+                    <div class="flex items-center justify-between mt-1.5">
+                        <span class="font-bold text-white text-sm font-mono">{{ user.phone }}</span>
+                        <a href="tel:{{ user.phone }}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition flex items-center gap-1 shadow">
+                            <span>📞</span> <span>Call Patient</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
+                    <span class="text-slate-400 font-medium block text-[11px]">🚨 Emergency Contact (Family)</span>
+                    <div class="flex items-center justify-between mt-1.5">
+                        <span class="font-bold text-red-300 text-sm font-mono">{{ user.emergency_contact }}</span>
+                        <a href="tel:+919123456789" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs transition flex items-center gap-1 shadow">
+                            <span>📞</span> <span>Call Family</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sm:col-span-2 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 flex items-start justify-between gap-3">
+                    <div>
+                        <span class="text-slate-400 font-medium block text-[11px]">📍 Residential Address</span>
+                        <p class="font-semibold text-slate-200 mt-1 text-xs sm:text-sm">{{ user.address }}</p>
+                    </div>
+                    <a href="https://maps.google.com/?q={{ user.address | urlencode }}" target="_blank" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center gap-1 mt-1">
+                        <span>🗺️</span> <span>Maps</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. REAL-TIME PATIENT VITALS -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 shadow-xl">
+            <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span>⚡ Live Patient Vitals (Synced IoT Sensors)</span>
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] text-slate-400 block font-medium">Body Temp</span>
+                    <span class="text-lg font-black text-amber-400">{{ vitals.temperature }}</span>
+                    <span class="text-[9px] text-emerald-400 block font-semibold mt-0.5">● Normal</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] text-slate-400 block font-medium">Blood Pressure</span>
+                    <span class="text-lg font-black text-white">{{ vitals.blood_pressure }}</span>
+                    <span class="text-[9px] text-emerald-400 block font-semibold mt-0.5">● Optimal</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] text-slate-400 block font-medium">Pulse / Heart Rate</span>
+                    <span class="text-lg font-black text-emerald-400">{{ vitals.pulse }}</span>
+                    <span class="text-[9px] text-emerald-400 block font-semibold mt-0.5">● Regular</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] text-slate-400 block font-medium">Blood Oxygen</span>
+                    <span class="text-lg font-black text-cyan-400">{{ vitals.spo2 }}</span>
+                    <span class="text-[9px] text-emerald-400 block font-semibold mt-0.5">● 99% SpO2</span>
+                </div>
+                <div class="col-span-2 sm:col-span-1 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] text-slate-400 block font-medium">Fasting Sugar</span>
+                    <span class="text-lg font-black text-indigo-300">{{ vitals.blood_sugar }}</span>
+                    <span class="text-[9px] text-emerald-400 block font-semibold mt-0.5">● Normal</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CRITICAL ALLERGIES & CHRONIC CONDITIONS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-red-950/30 border border-red-500/40 rounded-3xl p-4 shadow-lg">
+                <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5 mb-2.5">
+                    <span>⚠️ Severe Drug Allergies</span>
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for allergy in user.allergies %}
+                    <span class="px-3 py-1 bg-red-900/50 border border-red-700/60 rounded-xl text-red-200 font-bold text-xs shadow-sm">
+                        ✕ {{ allergy }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-amber-950/20 border border-amber-500/30 rounded-3xl p-4 shadow-lg">
+                <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5 mb-2.5">
+                    <span>🩺 Chronic Medical Conditions</span>
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for cond in user.chronic_conditions %}
+                    <span class="px-3 py-1 bg-amber-900/40 border border-amber-700/50 rounded-xl text-amber-200 font-semibold text-xs shadow-sm">
+                        • {{ cond }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SAVED CLINICAL REPORTS & VAULT FILES (INTERACTIVE VIEWER) -->
+        <div class="bg-slate-900/90 border border-indigo-500/30 rounded-3xl p-5 shadow-2xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-800">
+                <div>
+                    <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider block">Patient Reports Vault</span>
+                    <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                        <span>📁 Saved Health Reports & Clinical Documents</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Tap on any report below to view full lab results, imaging scans, and prescriptions.</p>
+                </div>
+                <span class="text-xs text-indigo-300 font-semibold bg-indigo-950 px-3 py-1 rounded-xl border border-indigo-500/40 self-start sm:self-auto">
+                    {{ current_records | length + past_records | length }} Verified Reports
+                </span>
+            </div>
+
+            <!-- Current Active Reports List -->
+            <div class="space-y-3">
+                <div class="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400"></span> Current Active Episode (March 2026)
+                </div>
+
+                {% for record in current_records %}
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition shadow-lg">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2.5 py-0.5 bg-indigo-950 text-indigo-300 border border-indigo-500/30 rounded-lg text-[10px] font-bold">
+                                    {{ record.category }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-mono">{{ record.date }}</span>
+                                <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">✓ {{ record.doctor_status }}</span>
+                            </div>
+                            <h4 class="font-bold text-white text-base mt-1">{{ record.title }}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Doctor: <span class="text-indigo-300 font-medium">{{ record.doctor_name }}</span></p>
+                        </div>
+
+                        <!-- 👁️ View Report Button -->
+                        <button type="button" @click="openReportViewer({{ record | tojson | forceescape }})"
+                                class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 whitespace-nowrap self-stretch sm:self-start">
+                            <span>👁️</span> <span>View Full Report</span>
+                        </button>
+                    </div>
+
+                    {% if record.key_metrics %}
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-900 text-xs">
+                        {% for k, v in record.key_metrics.items() %}
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                            <span class="text-slate-400 text-[10px] block">{{ k }}</span>
+                            <span class="font-bold text-slate-100 text-xs">{{ v }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if record.doctor_notes %}
+                    <p class="text-xs text-slate-300 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/80 mt-2.5 leading-relaxed">
+                        💡 <b>Doctor's Clinical Finding:</b> {{ record.doctor_notes }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Past Health Reports & History List -->
+            <div class="space-y-3 mt-6 pt-5 border-t border-slate-800">
+                <div class="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span> Historical Medical Archive (2025)
+                </div>
+
+                {% for hist in past_records %}
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800/90 hover:border-amber-500/40 transition shadow-lg">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2.5 py-0.5 bg-amber-950/60 text-amber-300 border border-amber-500/30 rounded-lg text-[10px] font-bold">
+                                    {{ hist.category }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-mono">{{ hist.date }}</span>
+                            </div>
+                            <h4 class="font-bold text-white text-base mt-1">{{ hist.title }}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">{{ hist.hospital }} • <span class="text-amber-200 font-medium">{{ hist.doctor_name }}</span></p>
+                        </div>
+
+                        <button type="button" @click="openReportViewer({{ hist | tojson | forceescape }})"
+                                class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 whitespace-nowrap self-stretch sm:self-start">
+                            <span>👁️</span> <span>View Archive Record</span>
+                        </button>
+                    </div>
+
+                    {% if hist.key_metrics %}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-900 text-xs">
+                        {% for k, v in hist.key_metrics.items() %}
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                            <span class="text-slate-400 text-[10px] block">{{ k }}</span>
+                            <span class="font-bold text-emerald-300 text-xs">{{ v }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if hist.notes %}
+                    <p class="text-xs text-slate-400 mt-2.5 bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
+                        Historical Note: {{ hist.notes }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 5. ACTIVE MEDICATIONS & DOSING SCHEDULE -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-3.5 flex items-center gap-2">
+                <span>💊 Active Prescribed Medications</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {% for med in medications %}
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-white text-sm">{{ med.drug_name }}</h4>
+                        <span class="text-[10px] text-cyan-300 bg-cyan-950/60 px-2.5 py-1 rounded-lg border border-cyan-800/40 font-bold">{{ med.dosage }}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">{{ med.composition }}</p>
+                    <div class="mt-2.5 flex items-center gap-2 text-[10px] text-slate-300 bg-slate-900 p-2 rounded-xl">
+                        <span class="font-medium">Schedule:</span>
+                        {% if med.schedule.morning != '—' %}<span class="text-amber-400 font-bold">🌅 Morning</span>{% endif %}
+                        {% if med.schedule.afternoon != '—' %}<span class="text-amber-400 font-bold">☀️ Noon</span>{% endif %}
+                        {% if med.schedule.night != '—' %}<span class="text-indigo-400 font-bold">🌙 Night</span>{% endif %}
+                        <span class="text-slate-400 ml-auto font-medium">{{ med.schedule.meal_relation }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 6. PRIMARY CARE HOSPITAL & PHYSICIAN -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span>🏥 Primary Hospital & Attending Physician</span>
+            </h3>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <div>
+                    <h4 class="font-bold text-white text-base">{{ user.hospital }}</h4>
+                    <p class="text-xs text-indigo-300 mt-0.5">Primary Physician: <b>{{ user.primary_physician }}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Insurance: {{ user.insurance_provider }} (Policy: {{ user.policy_no }})</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="tel:+914023607777" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+                        <span>📞</span> <span>Call Hospital</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- INTERACTIVE CLINICAL REPORT VIEWER MODAL                      -->
+    <!-- ============================================================ -->
+    <div x-show="viewingReport" x-cloak class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-slate-950 w-full max-w-2xl rounded-3xl border border-indigo-500/50 p-5 sm:p-7 shadow-2xl flex flex-col text-left my-auto max-h-[95vh] overflow-y-auto" @click.away="viewingReport = null">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center text-lg">
+                        📄
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider" x-text="viewingReport?.category || 'Clinical Document'"></span>
+                            <span class="text-[9px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 font-bold">Verified ABDM Record</span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-black text-white mt-0.5" x-text="viewingReport?.title"></h3>
+                    </div>
+                </div>
+                <button @click="viewingReport = null" class="text-slate-400 hover:text-white text-2xl font-bold p-1">&times;</button>
+            </div>
+
+            <!-- Diagnostic Center / Hospital Header -->
+            <div class="mt-3.5 bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between text-xs">
+                <div>
+                    <span class="text-[10px] text-slate-400 block">Diagnostic Facility</span>
+                    <span class="font-bold text-white" x-text="viewingReport?.hospital || 'Apollo Diagnostics & Imaging Network, Hyderabad'"></span>
+                    <p class="text-[11px] text-indigo-300 mt-0.5" x-text="'Attending Specialist: ' + (viewingReport?.doctor_name || 'Dr. K. S. Rao, MD')"></p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 block">Date of Reporting</span>
+                    <span class="font-mono text-emerald-400 font-bold" x-text="viewingReport?.date"></span>
+                </div>
+            </div>
+
+            <!-- Report Image / Scan / Visual Preview -->
+            <div class="mt-3.5 bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden text-center">
+                <template x-if="viewingReport?.file_url">
+                    <div class="relative group">
+                        <img :src="viewingReport.file_url" :alt="viewingReport.title" class="w-full max-h-72 object-cover rounded-2xl">
+                        <div class="absolute bottom-2 right-2 bg-black/80 px-2.5 py-1 rounded-lg text-[10px] font-mono text-slate-300">
+                            Digital Scan Preview
+                        </div>
+                    </div>
+                </template>
+                <template x-if="!viewingReport?.file_url">
+                    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800/80">
+                        <span class="text-3xl block mb-2">📋</span>
+                        <h5 class="text-xs font-bold text-white">Diagnostic Laboratory Analysis Sheet</h5>
+                        <p class="text-[11px] text-slate-400 mt-1">Full biochemical & physiological parameters verified against NABL clinical reference standard.</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Key Metrics Breakdown Table -->
+            <template x-if="viewingReport?.key_metrics">
+                <div class="mt-3.5">
+                    <h5 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Quantitative Clinical Parameters</h5>
+                    <div class="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden divide-y divide-slate-800/80 text-xs">
+                        <template x-for="(val, key) in viewingReport.key_metrics" :key="key">
+                            <div class="flex items-center justify-between p-3">
+                                <span class="text-slate-300 font-medium" x-text="key"></span>
+                                <span class="font-bold text-emerald-400 font-mono" x-text="val"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Doctor Notes & Findings -->
+            <template x-if="viewingReport?.doctor_notes || viewingReport?.notes">
+                <div class="mt-3.5 bg-slate-900/70 border border-slate-800 p-3.5 rounded-2xl text-xs">
+                    <span class="text-indigo-400 font-bold block mb-1">👨‍⚕️ Specialist Diagnostic Interpretation:</span>
+                    <p class="text-slate-200 leading-relaxed" x-text="viewingReport.doctor_notes || viewingReport.notes"></p>
+                </div>
+            </template>
+
+            <!-- Modal Bottom Actions -->
+            <div class="mt-5 flex gap-2">
+                <button type="button" @click="window.print()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30">
+                    <span>🖨️</span> <span>Print / Save PDF</span>
+                </button>
+                <button type="button" @click="viewingReport = null" class="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">
+                    Close Viewer
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-3xl mx-auto px-4 mt-8 text-center text-xs text-slate-500 space-y-1">
+        <p>AuraHealth 360 National EHR Pass • Verified ABDM Health Infrastructure</p>
+        <p class="text-[10px]">Data is encrypted & digitally signed for emergency clinical access.</p>
+    </footer>
+
+    <script>
+        function emergencyDossierApp() {
+            return {
+                viewingReport: null,
+                openReportViewer(record) {
+                    this.viewingReport = record;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

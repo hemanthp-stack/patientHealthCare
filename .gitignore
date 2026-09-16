@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+tunnel_state.json
+uploads/*
+!uploads/.gitkeep
