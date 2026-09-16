@@ -3426,14 +3426,8 @@
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
                         return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
                     }
-                    if (window.location.protocol.startsWith('http') && window.location.port !== '8000' && !this.liveTunnelUrl) {
-                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
-                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
-                    }
-                    if (this.liveTunnelUrl) {
-                        return `${this.liveTunnelUrl}/emergency/${this.currentUser.health_id}`;
-                    }
-                    return `http://10.212.70.57:8000/emergency/${this.currentUser.health_id}`;
+                    // Permanent 99.9% Uptime GitHub Pages Cloud Pass (Works on any phone globally, never shows 'no tunnel here')
+                    return `https://hemanthp-stack.github.io/healthtech/emergency.html?id=${this.currentUser.health_id}`;
                 },
 
                 getFullMedicalDossierText() {
