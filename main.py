@@ -60,13 +60,30 @@ if ASSETS_DIR.exists():
 
 @app.api_route("/pulse_shield_logo.png", methods=["GET", "HEAD"])
 async def get_pulse_shield_logo():
-    return FileResponse(BASE_DIR / "pulse_shield_logo.png", media_type="image/png")
+    logo_path = BASE_DIR / "pulse_shield_logo.png"
+    if not logo_path.exists():
+        logo_path = BASE_DIR.parent / "pulse_shield_logo.png"
+    if logo_path.exists():
+        return FileResponse(logo_path, media_type="image/png")
+    return HTMLResponse("", status_code=204)
 
 @app.api_route("/favicon.ico", methods=["GET", "HEAD"])
 @app.api_route("/favicon.png", methods=["GET", "HEAD"])
 async def get_favicon():
-    return FileResponse(BASE_DIR / "favicon.png", media_type="image/png")
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+    fav_path = BASE_DIR / "favicon.png"
+    if not fav_path.exists():
+        fav_path = BASE_DIR.parent / "favicon.png"
+    if fav_path.exists():
+        return FileResponse(fav_path, media_type="image/png")
+    return HTMLResponse("", status_code=204)
+
+templates_dir = BASE_DIR / "templates"
+if not templates_dir.exists():
+    templates_dir = BASE_DIR.parent / "templates"
+try:
+    templates = Jinja2Templates(directory=str(templates_dir)) if templates_dir.exists() else None
+except Exception:
+    templates = None
 
 # --- In-Memory Stores ---
 ACTIVE_SESSIONS = {}
@@ -1161,33 +1178,29 @@ class SelectHospitalRequest(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_portal(request: Request):
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "app_name": "Pulse Shield",
-        "user": DEFAULT_USER,
-        "past_records": PAST_HEALTH_REPORTS,
-        "lan_ip": get_lan_ip()
-    })
+    for candidate in [BASE_DIR / "index.html", BASE_DIR / "templates" / "index.html", BASE_DIR.parent / "index.html"]:
+        if candidate.exists():
+            return HTMLResponse(candidate.read_text(encoding="utf-8"))
+    if templates:
+        try:
+            return templates.TemplateResponse("index.html", {"request": request, "user": DEFAULT_USER, "lan_ip": get_lan_ip()})
+        except Exception:
+            pass
+    return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield Portal</h1></body></html>")
 
 
 # --- Dedicated Standalone Public Emergency Page (For Phone QR Scanners) ---
 @app.get("/emergency/{health_id}", response_class=HTMLResponse)
 async def serve_emergency_page(request: Request, health_id: str):
-    """
-    When an EMT, doctor, or paramedic points their camera at the QR code,
-    this standalone responsive medical page opens immediately with zero auth required.
-    """
-    return templates.TemplateResponse("emergency.html", {
-        "request": request,
-        "app_name": "Pulse Shield — Emergency Responder View",
-        "user": DEFAULT_USER,
-        "vitals": CURRENT_VITALS,
-        "current_records": MOCK_RECORDS,
-        "past_records": PAST_HEALTH_REPORTS,
-        "medications": SAMPLE_PRESCRIPTION_DATA.get("medications", []),
-        "condition": HEALTH_ISSUE_DATA,
-        "lan_ip": get_lan_ip()
-    })
+    for candidate in [BASE_DIR / "emergency.html", BASE_DIR / "templates" / "emergency.html", BASE_DIR.parent / "emergency.html"]:
+        if candidate.exists():
+            return HTMLResponse(candidate.read_text(encoding="utf-8"))
+    if templates:
+        try:
+            return templates.TemplateResponse("emergency.html", {"request": request, "user": DEFAULT_USER, "lan_ip": get_lan_ip()})
+        except Exception:
+            pass
+    return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield Emergency Dossier</h1></body></html>")
 
 
 @app.get("/api/tunnel-status")
