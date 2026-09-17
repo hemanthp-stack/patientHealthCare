@@ -874,24 +874,29 @@
             background-size: 32px 32px;
             background-position: 0 0, 16px 16px;
         }
-
-        /* 3D Physical Sized Medical ID Card Styles (3.375" x 2.125") */
+        /* 3D Smart Medical ID Card Styles (Enlarged & Glitch-Free) */
         .card-perspective-container {
-            perspective: 1200px;
+            perspective: 1600px;
+            -webkit-perspective: 1600px;
         }
 
         .id-card-3d {
-            width: 3.375in;
-            height: 2.125in;
+            width: 580px;
+            max-width: 94vw;
+            height: 360px;
             transform-style: preserve-3d;
-            transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
+            will-change: transform;
         }
 
         @media (max-width: 640px) {
-            .id-card-wrapper-mobile {
-                transform: scale(0.92);
-                transform-origin: center center;
+            .id-card-3d {
+                width: 94vw;
+                height: calc(94vw / 1.586);
+                min-height: 230px;
+                max-height: 310px;
             }
         }
 
@@ -902,12 +907,20 @@
             height: 100%;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            border-radius: 14px;
-            overflow: hidden;
+            border-radius: 22px;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: opacity 0.28s ease, transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .card-front {
+            transform: rotateY(0deg) translateZ(2px);
+            -webkit-transform: rotateY(0deg) translateZ(2px);
         }
 
         .card-back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg) translateZ(2px);
+            -webkit-transform: rotateY(180deg) translateZ(2px);
         }
 
         .holo-overlay {
@@ -924,17 +937,17 @@
 
         .emv-chip {
             background: linear-gradient(135deg, #d4af37 0%, #f9d976 50%, #aa7c11 100%);
-            border: 1px solid #946d0a;
-            border-radius: 4px;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.4);
+            border: 1.5px solid #946d0a;
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.7), 0 3px 6px rgba(0,0,0,0.5);
             position: relative;
         }
         .emv-chip::after {
             content: '';
             position: absolute;
-            inset: 2px;
-            border: 1px solid rgba(0,0,0,0.25);
-            border-radius: 2px;
+            inset: 3px;
+            border: 1px solid rgba(0,0,0,0.3);
+            border-radius: 3px;
         }
 
         .crisp-qr canvas, .crisp-qr img {
@@ -1367,104 +1380,121 @@
                 </div>
 
             </div>
-
-
             <!-- ============================================================ -->
-            <!-- TAB 2: 3D MEDICAL ID CARD (3.375" x 2.125" SPEC)             -->
+            <!-- TAB 2: 3D MEDICAL ID CARD (ENLARGED & GLITCH-FREE)          -->
             <!-- ============================================================ -->
             <div x-show="activeTab === 'idcard'" class="p-4 sm:p-8 space-y-6 flex flex-col items-center justify-center">
-                <div class="text-center max-w-lg">
+                <div class="text-center max-w-xl">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
-                        <span>💳 ISO/IEC 7810 ID-1 Physical Specification</span>
+                        <span>💳 ISO/IEC 7810 ID-1 Smart Card Architecture</span>
                     </div>
-                    <h2 class="text-2xl font-black text-white">Smart 3D Medical Identification Card</h2>
-                    <p class="text-xs text-slate-400 mt-1">
-                        Physical standard: <b class="text-slate-200">3.375 in × 2.125 in</b>. Unique ID per user. High-contrast QR scans instantly on any phone camera.
+                    <h2 class="text-2xl sm:text-3xl font-black text-white">Smart 3D Medical Identification Card</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                        High-definition smart holographic credentials. Flip to view clinical notes or scan QR instantly with any smartphone camera.
                     </p>
                 </div>
 
                 <!-- 3D Card Interactive Stage -->
-                <div class="card-perspective-container id-card-wrapper-mobile flex items-center justify-center py-4"
+                <div class="card-perspective-container flex items-center justify-center py-6 w-full"
                      @mousemove="handleCardTilt($event)" 
                      @mouseleave="resetCardTilt()">
                     
                     <div id="physical3DCard" 
-                         class="id-card-3d shadow-2xl shadow-indigo-950/70 border border-indigo-500/30 rounded-[14px]">
+                         class="id-card-3d shadow-2xl shadow-indigo-950/90 border border-indigo-500/40 rounded-[22px]">
                         
                         <!-- FRONT FACE -->
-                        <div class="card-face bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-3.5 flex flex-col justify-between border border-white/10 shadow-inner">
-                            <div class="holo-overlay absolute inset-0 rounded-[14px]"></div>
+                        <div class="card-face card-front bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 sm:p-7 flex flex-col justify-between border border-white/10 shadow-2xl"
+                             :class="isCardFlipped ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'">
+                            <div class="holo-overlay absolute inset-0 rounded-[22px]"></div>
                             
+                            <!-- Top Card Header -->
                             <div class="flex items-center justify-between z-10">
-                                <div class="flex items-center gap-1.5">
-                                    <div class="w-5 h-5 rounded-md bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">⚡</div>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-base font-bold shadow-lg shadow-indigo-600/40">⚡</div>
                                     <div>
-                                        <h3 class="text-[11px] font-extrabold tracking-wider uppercase text-white font-card leading-none">AuraHealth 360</h3>
-                                        <span class="text-[7.5px] text-indigo-300 font-mono tracking-tight">GLOBAL HEALTH PASS</span>
+                                        <h3 class="text-sm sm:text-base font-black tracking-wider uppercase text-white font-card leading-none">AuraHealth 360</h3>
+                                        <span class="text-[9px] sm:text-[10px] text-indigo-300 font-mono tracking-wider font-semibold">GLOBAL HEALTH PASS • VERIFIED ABDM</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-3.5 h-3.5 text-indigo-300 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.393 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
-                                    <div class="emv-chip w-7 h-5"></div>
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-indigo-300 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.393 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                                    <div class="emv-chip w-11 h-8 sm:w-12 sm:h-9"></div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between z-10 gap-2 my-auto">
+                            <!-- Middle: Patient Profile & Large QR -->
+                            <div class="flex items-center justify-between z-10 gap-3 sm:gap-4 my-auto">
+                                <!-- Photo with Blood Group -->
                                 <div class="relative flex-shrink-0">
-                                    <img :src="currentUser.avatar" alt="Patient" class="w-12 h-14 object-cover rounded-md border border-indigo-400/40 shadow">
-                                    <span class="absolute -bottom-1 -right-1 px-1 py-0.2 bg-red-600 text-white font-bold text-[7px] rounded" x-text="currentUser.blood_group.split(' ')[0]"></span>
+                                    <img :src="currentUser.avatar" alt="Patient" class="w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-xl border-2 border-indigo-400/50 shadow-lg">
+                                    <span class="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.5 bg-red-600 text-white font-black text-[10px] sm:text-xs rounded-md shadow" x-text="currentUser.blood_group.split(' ')[0]"></span>
                                 </div>
 
+                                <!-- Patient Demographics -->
                                 <div class="flex-1 min-w-0 pr-1">
-                                    <p class="text-[7px] uppercase tracking-wider text-slate-400 font-semibold">Patient Name</p>
-                                    <p class="text-[11px] font-bold text-white truncate leading-tight" x-text="currentUser.name"></p>
+                                    <p class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Patient Name</p>
+                                    <h4 class="text-sm sm:text-lg font-black text-white truncate leading-tight mt-0.5" x-text="currentUser.name"></h4>
                                     
-                                    <p class="text-[7px] uppercase tracking-wider text-slate-400 font-semibold mt-1">Unique Patient Health ID</p>
-                                    <p class="text-[9px] font-mono font-bold text-indigo-300 truncate" x-text="currentUser.health_id"></p>
+                                    <p class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold mt-1.5">Unique ABDM Health ID</p>
+                                    <p class="text-[11px] sm:text-xs font-mono font-black text-indigo-300 truncate tracking-wide" x-text="currentUser.health_id"></p>
                                     
-                                    <div class="flex items-center gap-2 mt-1 text-[7px] text-slate-300">
-                                        <span>DOB: <b class="text-white" x-text="currentUser.dob"></b></span>
-                                        <span>Hospital: <b class="text-emerald-300 truncate max-w-[80px]" x-text="currentUser.hospital.split(',')[0]"></b></span>
+                                    <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 mt-2 text-[9px] sm:text-[10px] text-slate-300">
+                                        <div><span class="text-slate-400">DOB:</span> <b class="text-white" x-text="currentUser.dob"></b></div>
+                                        <div><span class="text-slate-400">Gender:</span> <b class="text-white" x-text="currentUser.gender"></b></div>
+                                        <div class="col-span-2 truncate"><span class="text-slate-400">Provider:</span> <b class="text-emerald-300" x-text="currentUser.hospital.split(',')[0]"></b></div>
                                     </div>
                                 </div>
 
-                                <!-- High-Contrast Crisp Scannable QR -->
+                                <!-- High-Contrast Crisp Scannable Large QR -->
                                 <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" @click="openEnlargeQrModal()" title="Click to enlarge scannable QR Code">
-                                    <div class="p-1.5 bg-white rounded-lg shadow-md border border-slate-300 crisp-qr">
-                                        <div id="cardQrContainer" class="w-14 h-14 flex items-center justify-center"></div>
+                                    <div class="p-2 bg-white rounded-xl shadow-xl border-2 border-slate-300 crisp-qr">
+                                        <div id="cardQrContainer" class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center"></div>
                                     </div>
-                                    <span class="text-[6.5px] font-mono text-emerald-400 font-bold mt-0.5">🔍 TAP TO ENLARGE</span>
+                                    <span class="text-[8px] sm:text-[9px] font-mono text-emerald-400 font-black mt-1 tracking-tight">🔍 TAP TO ENLARGE</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between border-t border-white/10 pt-1 z-10 text-[7.5px]">
-                                <span class="text-slate-400">Emergency: <b class="text-emerald-300" x-text="currentUser.emergency_contact.split(' ')[0] + ' ' + currentUser.emergency_contact.split(' ')[1]"></b></span>
-                                <span class="text-indigo-400 font-mono">CR80 VERIFIED</span>
+                            <!-- Bottom Bar -->
+                            <div class="flex items-center justify-between border-t border-white/10 pt-2 z-10 text-[9px] sm:text-[10px]">
+                                <span class="text-slate-400">🚨 Emergency Desk: <b class="text-emerald-300 font-mono" x-text="currentUser.emergency_contact"></b></span>
+                                <span class="text-indigo-400 font-mono font-bold tracking-wider">CR80 ISO/IEC 7810 COMPLIANT</span>
                             </div>
                         </div>
 
                         <!-- BACK FACE -->
-                        <div class="card-face card-back bg-gradient-to-tl from-slate-950 via-slate-900 to-slate-950 p-3 flex flex-col justify-between border border-white/10 shadow-inner">
-                            <div class="holo-overlay absolute inset-0 rounded-[14px]"></div>
-                            <div class="w-full h-5 bg-black/90 -mx-3 -mt-3 mb-1 border-y border-slate-800"></div>
+                        <div class="card-face card-back bg-gradient-to-tl from-slate-950 via-slate-900 to-slate-950 p-5 sm:p-7 flex flex-col justify-between border border-white/10 shadow-2xl"
+                             :class="isCardFlipped ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'">
+                            <div class="holo-overlay absolute inset-0 rounded-[22px]"></div>
+                            
+                            <!-- Magnetic Stripe -->
+                            <div class="w-full h-8 sm:h-10 bg-black/95 -mx-5 sm:-mx-7 -mt-5 sm:-mt-7 mb-2 border-y border-slate-800"></div>
 
-                            <div class="bg-indigo-950/50 border border-indigo-500/30 p-2 rounded-lg z-10 my-auto text-center">
-                                <span class="text-[7.5px] font-bold text-amber-300 uppercase tracking-wider block mb-0.5">🌿 Daily Health Quote</span>
-                                <p class="text-[8px] italic text-slate-100 font-serif leading-tight" x-text="'“' + currentQuote.quote + '”'"></p>
-                                <span class="text-[7px] text-indigo-300 font-semibold block mt-0.5" x-text="'— ' + currentQuote.author"></span>
+                            <!-- Daily Health Quote -->
+                            <div class="bg-indigo-950/60 border border-indigo-500/40 p-3 sm:p-4 rounded-xl z-10 my-auto text-center shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] font-black text-amber-300 uppercase tracking-widest block mb-1">🌿 Daily Clinical & Wellness Quote</span>
+                                <p class="text-xs sm:text-sm italic text-slate-100 font-serif leading-relaxed" x-text="'“' + currentQuote.quote + '”'"></p>
+                                <span class="text-[10px] sm:text-[11px] text-indigo-300 font-bold block mt-1" x-text="'— ' + currentQuote.author"></span>
                             </div>
 
-                            <div class="space-y-1 z-10 text-[7.5px]">
-                                <div class="flex justify-between text-slate-300">
-                                    <span>Allergies: <b class="text-red-400" x-text="currentUser.allergies.slice(0, 2).join(', ')"></b></span>
-                                    <span>Donor: <b class="text-emerald-400">REGISTERED (YES)</b></span>
+                            <!-- Emergency Clinical Details -->
+                            <div class="grid grid-cols-2 gap-2 z-10 text-[9px] sm:text-[10px] bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                                <div><span class="text-slate-400">Allergies:</span> <b class="text-red-400 font-bold" x-text="currentUser.allergies.join(', ')"></b></div>
+                                <div><span class="text-slate-400">Organ Donor:</span> <b class="text-emerald-400 font-bold">REGISTERED (YES)</b></div>
+                                <div><span class="text-slate-400">Blood Type:</span> <b class="text-white font-bold" x-text="currentUser.blood_group"></b></div>
+                                <div><span class="text-slate-400">Insurance:</span> <b class="text-indigo-300" x-text="currentUser.policy_no"></b></div>
+                            </div>
+
+                            <!-- Signature and Barcode Row -->
+                            <div class="flex items-center justify-between border-t border-white/10 pt-2 z-10">
+                                <div>
+                                    <span class="text-[7.5px] uppercase text-slate-500 block">Authorized Patient Signature</span>
+                                    <div class="h-6 w-28 sm:w-36 bg-slate-200 rounded px-2 flex items-center justify-center font-card text-xs text-slate-900 italic font-bold" x-text="currentUser.name"></div>
                                 </div>
-                            </div>
-
-                            <div class="flex items-center justify-between border-t border-white/10 pt-1 z-10">
-                                <div class="h-4 w-20 bg-slate-200 rounded px-1 flex items-center justify-center font-card text-[6.5px] text-slate-800 italic" x-text="currentUser.name"></div>
-                                <div class="font-mono text-[7px] text-slate-400 tracking-widest">
-                                    |||| | ||||| || |||||| |||
+                                <div class="text-right">
+                                    <div class="font-mono text-[9px] sm:text-[10px] text-slate-400 tracking-widest">
+                                        |||| | ||||| || |||||| |||| | |||
+                                    </div>
+                                    <span class="text-[7.5px] text-slate-500 font-mono uppercase">Cryptographically Sealed • ABDM ID</span>
                                 </div>
                             </div>
                         </div>
@@ -1474,19 +1504,19 @@
 
                 <!-- Card Controls -->
                 <div class="flex flex-wrap items-center justify-center gap-3">
-                    <button @click="toggleCardFlip()" 
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
+                    <button type="button" @click="toggleCardFlip()" 
+                            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         <span x-text="isCardFlipped ? 'Flip to Card Front' : 'Flip to 3D Back (Health Quote)'"></span>
                     </button>
 
-                    <button @click="shuffleQuote()" x-show="isCardFlipped"
-                            class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-xl text-xs font-semibold transition">
+                    <button type="button" @click="shuffleQuote()" x-show="isCardFlipped"
+                            class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-xl text-xs sm:text-sm font-semibold transition">
                         ✨ Shuffle Quote
                     </button>
 
-                    <button @click="openEnlargeQrModal()" 
-                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
+                    <button type="button" @click="openEnlargeQrModal()" 
+                            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                         <span>Enlarge Scannable QR Code</span>
                     </button>
@@ -3765,8 +3795,9 @@
                     const rect = card.getBoundingClientRect();
                     const x = event.clientX - rect.left;
                     const y = event.clientY - rect.top;
-                    const tiltX = ((y - rect.height / 2) / (rect.height / 2)) * -12;
-                    const tiltY = ((x - rect.width / 2) / (rect.width / 2)) * 12;
+                    const tiltX = ((y - rect.height / 2) / (rect.height / 2)) * -9;
+                    const multiplier = this.isCardFlipped ? -1 : 1;
+                    const tiltY = ((x - rect.width / 2) / (rect.width / 2)) * 9 * multiplier;
                     this.updateCardTransform(tiltX, tiltY);
                 },
 
@@ -3917,15 +3948,15 @@
                     try {
                         new QRCode(container, {
                             text: payload,
-                            width: 56,
-                            height: 56,
+                            width: 96,
+                            height: 96,
                             colorDark: "#000000",
                             colorLight: "#ffffff",
                             correctLevel: (typeof QRCode !== 'undefined' && QRCode.CorrectLevel) ? QRCode.CorrectLevel.L : 1
                         });
                     } catch (e) {
                         if (typeof AuraQR !== 'undefined') {
-                            container.innerHTML = AuraQR.generateSVG(payload, 56, 1);
+                            container.innerHTML = AuraQR.generateSVG(payload, 96, 1);
                         } else {
                             container.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
                         }
