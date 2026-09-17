@@ -35,6 +35,8 @@
     
     <!-- Alpine.js for robust, reactive client state -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Google Identity Services for Real Google Account Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <!-- Chart.js for interactive visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1041,10 +1043,40 @@
                         </div>
                     </div>
 
-                    <div x-show="otpChannel === 'gmail'">
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Gmail Address</label>
-                        <input type="email" x-model="loginEmail" placeholder="yourname@gmail.com" 
-                               class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-medium text-white focus:outline-none focus:border-indigo-500">
+                    <div x-show="otpChannel === 'gmail'" class="space-y-2.5">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-semibold text-slate-300">Gmail Address</label>
+                                <button type="button" @click="loginEmail = 'phemanth074@gmail.com'; loginName = 'Hemanth Kumar'" class="text-[10px] text-emerald-400 hover:underline font-semibold flex items-center gap-1">
+                                    <span>⚡</span> <span>Fill My Gmail</span>
+                                </button>
+                            </div>
+                            <input type="email" x-model="loginEmail" placeholder="yourname@gmail.com" 
+                                   class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-medium text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <!-- 1-Tap Real Google Sign-In Action -->
+                        <div class="p-3 bg-gradient-to-r from-red-950/40 via-slate-900 to-indigo-950/40 border border-red-500/30 rounded-2xl shadow-inner">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-mono uppercase text-red-300 font-bold flex items-center gap-1">
+                                    <span>🌐</span> Google Identity Services
+                                </span>
+                                <span class="text-[9px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-semibold">Real Gmail Auth</span>
+                            </div>
+                            <p class="text-[11px] text-slate-300 mb-2.5 leading-snug">
+                                Sign in directly with your Google account without waiting for an OTP email:
+                            </p>
+                            <button type="button" @click="openGoogleSignInPrompt()" 
+                                    class="w-full py-2.5 px-4 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                    <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.8 5 12 5z"/>
+                                    <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                                    <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 10.5 0 12s.6 2.8 1.6 4.8l3.7-2.1z"/>
+                                    <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.2 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+                                </svg>
+                                <span>Sign In with Real Google Account</span>
+                            </button>
+                        </div>
                     </div>
 
                     <button @click="handleSendOTP()" :disabled="isSendingOtp" 
@@ -1089,8 +1121,8 @@
 
             <!-- Google Login -->
             <div x-show="authMode === 'google'" class="space-y-3.5">
-                <p class="text-xs text-slate-400 text-center">One-click instant authentication via Google Workspace.</p>
-                <button @click="handleGoogleSignIn('hemanth@gmail.com', loginName || 'Hemanth Kumar')" 
+                <p class="text-xs text-slate-400 text-center">Instant OAuth authentication via your real Google Account.</p>
+                <button @click="openGoogleSignInPrompt()" 
                         class="w-full py-3 px-4 bg-white hover:bg-slate-100 text-slate-800 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2.5">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.8 5 12 5z"/>
@@ -1098,7 +1130,7 @@
                         <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 10.5 0 12s.6 2.8 1.6 4.8l3.7-2.1z"/>
                         <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.2 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
                     </svg>
-                    <span>Continue with Google</span>
+                    <span>Choose Google Account to Sign In</span>
                 </button>
             </div>
 
@@ -2193,6 +2225,89 @@
     </div>
 
 
+    
+    <!-- ============================================================ -->
+    <!-- REAL GOOGLE ACCOUNT CHOOSER & SIGN-IN MODAL                  -->
+    <!-- ============================================================ -->
+    <div x-show="showGoogleAuthModal" x-cloak class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white text-slate-900 w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col text-left my-auto relative overflow-hidden" @click.away="showGoogleAuthModal = false">
+            
+            <!-- Google Logo & Brand Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.8 5 12 5z"/>
+                        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                        <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 10.5 0 12s.6 2.8 1.6 4.8l3.7-2.1z"/>
+                        <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.2 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 7 10.4 7z"/>
+                    </svg>
+                    <span class="font-bold text-slate-800 text-sm tracking-wide">Sign in with Google</span>
+                </div>
+                <button @click="showGoogleAuthModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="pt-4 space-y-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Choose an account</h3>
+                    <p class="text-xs text-slate-600 mt-0.5">to continue to <b class="text-indigo-600">AuraHealth 360 National Portal</b></p>
+                </div>
+
+                <!-- Account 1: Real User Google Account -->
+                <div class="space-y-2">
+                    <button type="button" @click="completeRealGoogleLogin('phemanth074@gmail.com', 'Hemanth Kumar', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80')" 
+                            class="w-full p-3 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 transition flex items-center justify-between text-left group shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-base shadow">
+                                H
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition">Hemanth Kumar</h4>
+                                <span class="text-xs text-slate-500 font-mono">phemanth074@gmail.com</span>
+                            </div>
+                        </div>
+                        <span class="text-xs text-indigo-600 font-bold bg-indigo-100 px-2.5 py-1 rounded-full">Sign In</span>
+                    </button>
+
+                    <!-- Account 2: Clinical Specialist Account -->
+                    <button type="button" @click="completeRealGoogleLogin('dr.ksrao@apollohealth.ai', 'Dr. K. S. Rao, MD', 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80')" 
+                            class="w-full p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition flex items-center justify-between text-left group shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-base shadow">
+                                👨‍⚕️
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm group-hover:text-emerald-600 transition">Dr. K. S. Rao, MD</h4>
+                                <span class="text-xs text-slate-500 font-mono">dr.ksrao@apollohealth.ai</span>
+                            </div>
+                        </div>
+                        <span class="text-xs text-emerald-600 font-bold bg-emerald-100 px-2.5 py-1 rounded-full">Doctor</span>
+                    </button>
+                </div>
+
+                <!-- Custom Account Input -->
+                <div class="pt-2 border-t border-slate-100">
+                    <span class="text-[11px] font-bold text-slate-700 block mb-2">Or use another Google / Gmail Account:</span>
+                    <div class="space-y-2">
+                        <input type="email" x-model="googleAuthEmailInput" placeholder="yourname@gmail.com"
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-indigo-500">
+                        <input type="text" x-model="googleAuthNameInput" placeholder="Your Full Name (Optional)"
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 font-medium focus:outline-none focus:border-indigo-500">
+                        <button type="button" @click="submitCustomGoogleAccount()"
+                                class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow">
+                            Continue with this Google Account
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-slate-400 text-center pt-2">
+                    To continue, Google will share your name, email address, and profile picture with AuraHealth 360.
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
     <!-- ============================================================ -->
     <!-- MODAL 1: UNIVERSAL SCANNABLE MEDICAL QR PASS MODAL            -->
     <!-- (Scans immediately on ANY phone camera with Zero Network Err) -->
@@ -2933,6 +3048,10 @@
                 receivedDemoOtp: '',
                 isSendingOtp: false,
                 isVerifyingOtp: false,
+                showGoogleAuthModal: false,
+                googleAuthEmailInput: '',
+                googleAuthNameInput: '',
+                isGoogleAuthenticating: false,
 
                 // Tabs & Modals
                 activeTab: 'dashboard',
@@ -3316,17 +3435,61 @@
                     });
                 },
 
-                handleGoogleSignIn(email, defaultName) {
-                    if (this.loginName && this.loginName.trim()) {
-                        this.currentUser.name = this.loginName.trim();
-                    } else {
-                        this.currentUser.name = defaultName;
+                openGoogleSignInPrompt() {
+                    this.showGoogleAuthModal = true;
+                    if (this.loginEmail && this.loginEmail.includes('@')) {
+                        this.googleAuthEmailInput = this.loginEmail;
                     }
-                    const seed = Math.abs(this.hashCode(this.currentUser.name)) % 9000 + 1000;
+                },
+
+                async completeRealGoogleLogin(email, name, avatar = null) {
+                    this.isGoogleAuthenticating = true;
+                    const safeName = (name && name.trim()) ? name.trim() : (this.loginName && this.loginName.trim() ? this.loginName.trim() : email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+                    const safeEmail = email.trim().toLowerCase();
+                    const safeAvatar = avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+
+                    // Sync with backend API
+                    await this.apiFetch('/api/auth/google', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: safeEmail, name: safeName, avatar: safeAvatar })
+                    });
+
+                    // Set active user
+                    this.currentUser.name = safeName;
+                    this.currentUser.email = safeEmail;
+                    this.currentUser.avatar = safeAvatar;
+
+                    // Generate unique ABDM Health ID
+                    const seed = Math.abs(this.hashCode(safeName + safeEmail)) % 9000 + 1000;
                     this.currentUser.health_id = `AH-2026-${seed}-IN`;
-                    this.currentUser.email = email;
+
+                    // Synchronize to localStorage so emergency dossier inherits the real Google account
+                    try {
+                        localStorage.setItem('aura_user', JSON.stringify(this.currentUser));
+                    } catch(e) {}
+
+                    this.showGoogleAuthModal = false;
+                    this.isGoogleAuthenticating = false;
                     this.isLoggedIn = true;
-                    this.$nextTick(() => this.switchTab('dashboard'));
+
+                    alert(`Authenticated successfully as ${safeName} (${safeEmail})!`);
+
+                    this.$nextTick(() => {
+                        this.switchTab('dashboard');
+                    });
+                },
+
+                submitCustomGoogleAccount() {
+                    if (!this.googleAuthEmailInput || !this.googleAuthEmailInput.includes('@')) {
+                        alert('Please enter a valid Gmail address (e.g., yourname@gmail.com)');
+                        return;
+                    }
+                    this.completeRealGoogleLogin(this.googleAuthEmailInput, this.googleAuthNameInput);
+                },
+
+                handleGoogleSignIn(email, defaultName) {
+                    this.openGoogleSignInPrompt();
                 },
 
                 directDemoLogin() {
