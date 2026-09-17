@@ -35,7 +35,10 @@ app.add_middleware(
 )
 
 # Static and Templates
+REPORTS_DIR = BASE_DIR / "reports"
+REPORTS_DIR.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+app.mount("/reports", StaticFiles(directory=str(REPORTS_DIR)), name="reports")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # --- In-Memory Stores ---

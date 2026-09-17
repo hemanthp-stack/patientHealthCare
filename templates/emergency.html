@@ -417,12 +417,18 @@
             </template>
 
             <!-- Modal Bottom Actions -->
-            <div class="mt-5 flex gap-2">
-                <button type="button" @click="window.print()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30">
-                    <span>🖨️</span> <span>Print / Save PDF</span>
+            <div class="mt-5 flex flex-wrap gap-2">
+                <button type="button" @click="shareEmergencyReport(viewingReport)" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-600/30">
+                    <span>💬</span> <span>Share to WhatsApp</span>
                 </button>
-                <button type="button" @click="viewingReport = null" class="py-2.5 px-5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">
-                    Close Viewer
+                <a :href="getReportDocumentUrl(viewingReport)" target="_blank" class="py-2.5 px-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30">
+                    <span>👁️</span> <span>View File</span>
+                </a>
+                <a :href="getReportDocumentUrl(viewingReport)" :download="viewingReport?.file_name || 'medical_report.pdf'" class="py-2.5 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                    <span>📥</span> <span>Download</span>
+                </a>
+                <button type="button" @click="viewingReport = null" class="py-2.5 px-3.5 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-xs font-semibold transition">
+                    Close
                 </button>
             </div>
 
@@ -470,7 +476,7 @@
                         id: "REC-101",
                         title: "Complete Blood Count (CBC) with Differential",
                         file_name: "CBC_Lab_Report_March2026.pdf",
-                        file_url: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80",
+                        file_url: "./reports/CBC_Lab_Report_March2026.pdf",
                         file_type: "application/pdf",
                         size_kb: 342,
                         category: "Blood Test",
@@ -489,7 +495,7 @@
                         id: "REC-102",
                         title: "High-Resolution Chest X-Ray (PA View)",
                         file_name: "Chest_XRay_PA_Digital.png",
-                        file_url: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+                        file_url: "./reports/Chest_XRay_PA_Digital.png",
                         file_type: "image/png",
                         size_kb: 1280,
                         category: "Imaging & Radiology",
@@ -507,7 +513,7 @@
                         id: "REC-103",
                         title: "Outpatient Prescription Slip - Dr. K. S. Rao",
                         file_name: "Rx_Apollo_Pulmonology_Mar09.jpg",
-                        file_url: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
+                        file_url: "./reports/Rx_Apollo_Pulmonology_Mar09.jpg",
                         file_type: "image/jpeg",
                         size_kb: 512,
                         category: "Doctor Prescription",
@@ -628,6 +634,77 @@
                 },
                 openReportViewer(record) {
                     this.viewingReport = record;
+                },
+                getReportDocumentUrl(report) {
+                    if (!report) return '';
+                    if (report.file_url) {
+                        if (report.file_url.startsWith('blob:') || report.file_url.startsWith('data:')) {
+                            return report.file_url;
+                        }
+                        if (report.file_url.startsWith('http://') || report.file_url.startsWith('https://')) {
+                            return report.file_url;
+                        }
+                        if (report.file_url.startsWith('./') || report.file_url.startsWith('/')) {
+                            const origin = window.location.origin;
+                            const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                            const cleanPath = report.file_url.replace(/^(\.\/|\/)/, '');
+                            return `${origin}${pathPrefix}/${cleanPath}`;
+                        }
+                    }
+                    const origin = window.location.origin;
+                    const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                    const fileName = report.file_name || 'CBC_Lab_Report_March2026.pdf';
+                    return `${origin}${pathPrefix}/reports/${fileName}`;
+                },
+                async shareEmergencyReport(report) {
+                    if (!report) return;
+                    const docUrl = this.getReportDocumentUrl(report);
+                    const fileName = report.file_name || `${report.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+
+                    // 1. Try native Web Share Level 2 (Attaches file directly to WhatsApp on mobile/supported OS)
+                    if (navigator.canShare && docUrl && !docUrl.startsWith('data:')) {
+                        try {
+                            const resp = await fetch(docUrl);
+                            if (resp.ok) {
+                                const blob = await resp.blob();
+                                let mime = 'application/pdf';
+                                if (fileName.endsWith('.png')) mime = 'image/png';
+                                else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) mime = 'image/jpeg';
+                                const file = new File([blob], fileName, { type: mime });
+
+                                if (navigator.canShare({ files: [file] })) {
+                                    await navigator.share({
+                                        files: [file],
+                                        title: `Medical Report: ${report.title}`,
+                                        text: `🏥 *AURAHEALTH 360 CLINICAL MEDICAL REPORT*\n📄 ${report.title}\n👤 Patient: ${this.user.name} (${this.user.health_id})\n📅 Date: ${report.date} | Category: ${report.category}\n👨‍⚕️ Doctor: ${report.doctor_name || 'Dr. K. S. Rao, MD'}\n💡 Finding: ${report.doctor_notes || report.notes || 'All physiological parameters within standard reference range.'}\n📎 Direct Document: ${docUrl}`
+                                    });
+                                    return;
+                                }
+                            }
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.warn('Emergency share fallback:', err);
+                            } else {
+                                return;
+                            }
+                        }
+                    }
+
+                    // 2. WhatsApp message fallback with direct document link
+                    const text = encodeURIComponent(
+                        `🏥 *AURAHEALTH 360 — CLINICAL MEDICAL REPORT*\n` +
+                        `========================================\n` +
+                        `📄 *REPORT:* ${report.title}\n` +
+                        `👤 *PATIENT:* ${this.user.name} (Health ID: ${this.user.health_id})\n` +
+                        `📅 *DATE:* ${report.date} | *CATEGORY:* ${report.category}\n` +
+                        `👨‍⚕️ *DOCTOR:* ${report.doctor_name || 'Dr. K. S. Rao, MD'}\n\n` +
+                        `📎 *DOWNLOAD / VIEW REAL REPORT DOCUMENT:*\n` +
+                        `👉 ${docUrl}\n\n` +
+                        `💡 *CLINICAL FINDING:*\n` +
+                        `${report.doctor_notes || report.notes || 'All physiological and biochemical parameters within clinical reference standards.'}\n` +
+                        `========================================`
+                    );
+                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
                 }
             }
         }

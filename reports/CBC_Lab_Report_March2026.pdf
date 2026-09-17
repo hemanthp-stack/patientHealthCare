@@ -1,0 +1,111 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 2928 >>
+stream
+BT
+/F1 18 Tf
+40 800 Td
+(AURAHEALTH 360 - NATIONAL DIGITAL HEALTH MISSION) Tj
+0 -20 Td
+/F2 11 Tf
+(ABDM Accredited Diagnostics Center | NABL ISO 15189 Certified Lab) Tj
+0 -12 Td
+(Lic. No: DL-NABL-2026-98441 | Diagnostic Pathology Division) Tj
+0 -25 Td
+/F1 13 Tf
+(PATIENT DEMOGRAPHICS & CLINICAL METADATA) Tj
+0 -16 Td
+/F2 10 Tf
+(Patient Name: Rajesh Sharma                     Age / Sex: 34 Y / Male) Tj
+0 -14 Td
+(ABHA / Health ID: ABHA-9921-4028-1192           Ref By: Dr. K. S. Rao, MD (Pulmonology)) Tj
+0 -14 Td
+(Sample Collected: 12-Mar-2026 08:30 IST        Reported: 12-Mar-2026 11:15 IST) Tj
+0 -14 Td
+(Barcode: AH-8849-2026-NABL                      Specimen: Whole Blood (EDTA)) Tj
+0 -25 Td
+/F1 13 Tf
+(COMPLETE BLOOD COUNT (CBC) WITH 5-PART DIFFERENTIAL) Tj
+0 -18 Td
+/F1 9 Tf
+(TEST PARAMETER                 OBSERVED VALUE    BIOLOGICAL REF INTERVAL    UNIT) Tj
+0 -14 Td
+/F2 9 Tf
+(Hemoglobin (Hb)                14.2              13.0 - 17.0                g/dL) Tj
+0 -13 Td
+(Packed Cell Volume (PCV)       42.8              40.0 - 50.0                %) Tj
+0 -13 Td
+(RBC Count                      4.85              4.50 - 5.90                mil/mcL) Tj
+0 -13 Td
+(Mean Corpuscular Volume (MCV)  88.2              80.0 - 100.0               fL) Tj
+0 -13 Td
+(MCH                            29.3              27.0 - 32.0                pg) Tj
+0 -13 Td
+(MCHC                           33.2              31.5 - 35.0                g/dL) Tj
+0 -13 Td
+(Red Cell Distrib Width (RDW)   13.1              11.5 - 14.5                %) Tj
+0 -13 Td
+(Total Leukocyte Count (WBC)    9,800             4,000 - 11,000             /mcL) Tj
+0 -13 Td
+(Neutrophils                    62                40 - 70                    %) Tj
+0 -13 Td
+(Lymphocytes                    30                20 - 40                    %) Tj
+0 -13 Td
+(Monocytes                      5                 2 - 8                      %) Tj
+0 -13 Td
+(Eosinophils                    3                 1 - 6                      %) Tj
+0 -13 Td
+(Basophils                      0                 0 - 1                      %) Tj
+0 -13 Td
+(Absolute Neutrophil Count      6,076             2,000 - 7,000              /mcL) Tj
+0 -13 Td
+(Platelet Count                 245,000           150,000 - 450,000          /mcL) Tj
+0 -25 Td
+/F1 11 Tf
+(CLINICAL PATHOLOGIST REMARKS & OPINION:) Tj
+0 -15 Td
+/F2 9 Tf
+(1. Total WBC normalized to 9,800/mcL following treatment. Acute bacterial infection cleared.) Tj
+0 -13 Td
+(2. Red blood cell indices and platelet indices are completely within normal physiological limits.) Tj
+0 -13 Td
+(3. Peripheral smear examination reveals normocytic normochromic RBCs and adequate platelets.) Tj
+0 -25 Td
+/F1 10 Tf
+(Dr. K. S. Rao, MD, DNB (Pathology)               ABDM Digital Health Signature ID: ABDM-SIG-77291) Tj
+0 -14 Td
+/F2 8 Tf
+(This report is digitally signed and cryptographically verifiable on the ABDM National Health Gateway.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000257 00000 n 
+0000003236 00000 n 
+0000003311 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+3381
+%%EOF

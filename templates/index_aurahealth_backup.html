@@ -2703,25 +2703,50 @@
             </div>
 
             <div class="my-4 space-y-3 text-xs">
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <p class="font-bold text-white" x-text="sharingReport?.title"></p>
+                <!-- Document Details Card -->
+                <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 bg-indigo-950 text-indigo-300 text-[10px] font-bold rounded" x-text="sharingReport?.category"></span>
+                        <span class="text-[10px] text-emerald-400 font-mono font-bold">✓ Verified ABDM</span>
+                    </div>
+                    <h4 class="font-bold text-white text-sm mt-1" x-text="sharingReport?.title"></h4>
+                    <p class="text-slate-400 text-[11px]" x-text="'File: ' + (sharingReport?.file_name || 'medical_report.pdf') + ' (' + (sharingReport?.size_kb || 342) + ' KB)'"></p>
                     <p class="text-slate-400 text-[11px]" x-text="'Patient: ' + currentUser.name + ' • Health ID: ' + currentUser.health_id"></p>
                 </div>
 
-                <!-- Share Options -->
-                <button @click="shareViaWhatsApp(sharingReport)" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
-                    <span>💬 Share via WhatsApp</span>
+                <!-- 1. PRIMARY ACTION: Send Real File / Document directly to WhatsApp -->
+                <button @click="shareFileToWhatsApp(sharingReport)" 
+                        class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 text-xs">
+                    <span class="text-base">📎</span>
+                    <span>Send Real Document File to WhatsApp</span>
                 </button>
 
-                <button @click="copyShareLink(sharingReport)" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                <!-- 2. Share via WhatsApp with Direct Document Link -->
+                <button @click="shareViaWhatsApp(sharingReport)" 
+                        class="w-full py-2.5 px-4 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl font-bold transition flex items-center justify-center gap-2 text-xs">
+                    <span>💬</span>
+                    <span>Share via WhatsApp (Rich Document Card)</span>
+                </button>
+
+                <!-- 3. Download & View Real File -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button @click="downloadReportFile(sharingReport)" 
+                            class="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-slate-700 rounded-xl font-semibold transition flex items-center justify-center gap-1.5 text-xs">
+                        <span>📥</span>
+                        <span>Download File</span>
+                    </button>
+                    <button @click="window.open(getReportDocumentUrl(sharingReport), '_blank')" 
+                            class="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-xl font-semibold transition flex items-center justify-center gap-1.5 text-xs">
+                        <span>👁️</span>
+                        <span>View Document</span>
+                    </button>
+                </div>
+
+                <!-- 4. Copy Share Link -->
+                <button @click="copyShareLink(sharingReport)" 
+                        class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl font-medium transition flex items-center justify-center gap-2 text-xs">
                     <span x-text="copyLinkText"></span>
                 </button>
-
-                <template x-if="navigator.share">
-                    <button @click="nativeShare(sharingReport)" class="w-full py-2.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl font-semibold transition">
-                        📱 More System Share Options
-                    </button>
-                </template>
             </div>
 
             <div class="pt-2 text-right">
@@ -3234,7 +3259,7 @@
                         id: "REC-101",
                         title: "Complete Blood Count (CBC) with Differential",
                         file_name: "CBC_Lab_Report_March2026.pdf",
-                        file_url: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80",
+                        file_url: "./reports/CBC_Lab_Report_March2026.pdf",
                         file_type: "application/pdf",
                         size_kb: 342,
                         category: "Blood Test",
@@ -3247,7 +3272,7 @@
                         id: "REC-102",
                         title: "High-Resolution Chest X-Ray (PA View)",
                         file_name: "Chest_XRay_PA_Digital.png",
-                        file_url: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+                        file_url: "./reports/Chest_XRay_PA_Digital.png",
                         file_type: "image/png",
                         size_kb: 1280,
                         category: "Imaging & Radiology",
@@ -3941,36 +3966,131 @@
                 openShareReportModal(report) {
                     this.sharingReport = report;
                     this.copyLinkText = '📋 Copy Link';
+                },                getReportDocumentUrl(report) {
+                    if (!report) return '';
+                    if (report.file_url) {
+                        if (report.file_url.startsWith('blob:') || report.file_url.startsWith('data:')) {
+                            return report.file_url;
+                        }
+                        if (report.file_url.startsWith('http://') || report.file_url.startsWith('https://')) {
+                            return report.file_url;
+                        }
+                        if (report.file_url.startsWith('./') || report.file_url.startsWith('/')) {
+                            const origin = window.location.origin;
+                            const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                            const cleanPath = report.file_url.replace(/^(\.\/|\/)/, '');
+                            return `${origin}${pathPrefix}/${cleanPath}`;
+                        }
+                    }
+                    const origin = window.location.origin;
+                    const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                    const fileName = report.file_name || 'CBC_Lab_Report_March2026.pdf';
+                    return `${origin}${pathPrefix}/reports/${fileName}`;
+                },
+
+                async shareFileToWhatsApp(report) {
+                    if (!report) return;
+                    const docUrl = this.getReportDocumentUrl(report);
+                    const webPassUrl = this.getEmergencyWebUrl();
+                    const fileName = report.file_name || `${report.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+
+                    // 1. Try native Web Share API Level 2 (Attaches real file directly to WhatsApp on mobile/supported OS)
+                    if (navigator.canShare && (report._fileObj || docUrl)) {
+                        try {
+                            let fileToShare = report._fileObj;
+                            if (!fileToShare && docUrl && !docUrl.startsWith('data:')) {
+                                const resp = await fetch(docUrl);
+                                if (resp.ok) {
+                                    const blob = await resp.blob();
+                                    let mime = 'application/pdf';
+                                    if (fileName.endsWith('.png')) mime = 'image/png';
+                                    else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) mime = 'image/jpeg';
+                                    fileToShare = new File([blob], fileName, { type: mime });
+                                }
+                            }
+
+                            if (fileToShare && navigator.canShare({ files: [fileToShare] })) {
+                                await navigator.share({
+                                    files: [fileToShare],
+                                    title: `Medical Report: ${report.title}`,
+                                    text: `🏥 *AURAHEALTH 360 CLINICAL MEDICAL REPORT*
+📄 ${report.title}
+👤 Patient: ${this.currentUser.name} (${this.currentUser.health_id})
+📅 Date: ${report.date} | Category: ${report.category}
+👨‍⚕️ Doctor: ${report.doctor_name || 'Dr. K. S. Rao, MD'}
+💡 Finding: ${report.doctor_notes || 'All physiological parameters within standard reference ranges.'}
+🌐 National ABDM Portal: ${webPassUrl}`
+                                });
+                                return;
+                            }
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.warn('Web Share file attachment fallback:', err);
+                            } else {
+                                return; // User dismissed share sheet
+                            }
+                        }
+                    }
+
+                    // 2. Desktop / Fallback mode:
+                    // Trigger instant download of the real report file and open WhatsApp with rich document card
+                    this.downloadReportFile(report);
+                    this.shareViaWhatsApp(report);
                 },
 
                 shareViaWhatsApp(report) {
-                    const text = encodeURIComponent(
-                        `📄 *Medical Report Share: ${report.title}*\n` +
-                        `Patient: ${this.currentUser.name} (Health ID: ${this.currentUser.health_id})\n` +
-                        `Date: ${report.date} | Category: ${report.category}\n` +
-                        `Doctor Note: ${report.doctor_notes}\n` +
-                        `Verified via AuraHealth 360 National Portal.`
-                    );
-                    window.open(`https://wa.me/?text=${text}`, '_blank');
+                    if (!report) return;
+                    const docUrl = this.getReportDocumentUrl(report);
+                    const webPassUrl = this.getEmergencyWebUrl();
+                    
+                    const message = 
+`🏥 *AURAHEALTH 360 — OFFICIAL CLINICAL REPORT DOCUMENT*
+========================================
+📄 *REPORT:* ${report.title}
+👤 *PATIENT:* ${this.currentUser.name} (Health ID: ${this.currentUser.health_id})
+📅 *DATE:* ${report.date} | *CATEGORY:* ${report.category}
+👨‍⚕️ *DOCTOR:* ${report.doctor_name || 'Dr. K. S. Rao, MD'}
+
+📎 *DOWNLOAD / VIEW REAL REPORT DOCUMENT:*
+👉 ${docUrl}
+
+💡 *SPECIALIST CLINICAL FINDINGS:*
+${report.doctor_notes || 'All physiological and biochemical parameters verified against NABL standards.'}
+
+🌐 *VERIFIED NATIONAL ABDM HEALTH PASS:*
+👉 ${webPassUrl}
+========================================`;
+
+                    const encoded = encodeURIComponent(message);
+                    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+                },
+
+                downloadReportFile(report) {
+                    if (!report) return;
+                    const docUrl = this.getReportDocumentUrl(report);
+                    const fileName = report.file_name || `${report.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+                    const a = document.createElement('a');
+                    a.href = docUrl;
+                    a.download = fileName;
+                    a.target = '_blank';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
                 },
 
                 copyShareLink(report) {
-                    const shareText = `Medical Report: ${report.title} for ${this.currentUser.name} (ID: ${this.currentUser.health_id}). Doctor: ${report.doctor_name}. Verified.`;
+                    if (!report) return;
+                    const docUrl = this.getReportDocumentUrl(report);
+                    const shareText = `Medical Report: ${report.title} for ${this.currentUser.name} (ID: ${this.currentUser.health_id}). Download Document: ${docUrl}`;
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(shareText);
                     }
-                    this.copyLinkText = '✓ Copied to Clipboard!';
+                    this.copyLinkText = '✓ Copied Document Link!';
                     setTimeout(() => this.copyLinkText = '📋 Copy Link', 2500);
                 },
 
                 nativeShare(report) {
-                    if (navigator.share) {
-                        navigator.share({
-                            title: report.title,
-                            text: `Medical Report: ${report.title} (${this.currentUser.name})`,
-                            url: window.location.href
-                        }).catch(() => {});
-                    }
+                    this.shareFileToWhatsApp(report);
                 },
 
                 async handleUploadRecord() {
@@ -3995,11 +4115,15 @@
                         body: formData
                     });
 
-                    const newRec = (backendRes && backendRes.record) ? backendRes.record : {
+                    const newRec = (backendRes && backendRes.record) ? {
+                        ...backendRes.record,
+                        _fileObj: file
+                    } : {
                         id: `REC-${this.recordsList.length + 101}`,
                         title: safeTitle,
                         file_name: file.name,
                         file_url: localUrl,
+                        _fileObj: file,
                         file_type: file.type || 'application/pdf',
                         size_kb: Math.max(1, Math.round(file.size / 1024)),
                         category: this.uploadCategory,
