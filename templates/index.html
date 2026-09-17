@@ -1032,9 +1032,38 @@
         ::-webkit-scrollbar-track { background: #090d16; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        /* Non-disturbance isolation for Noupe AI Assistant widget */
+        #JotformAgent-01a0aea378c070008d1714c625296f725b8d,
+        div[id*="JotformAgent"] {
+            z-index: 45 !important;
+            transition: bottom 0.25s ease, opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        /* Mobile bottom navigation spacing - avoid covering bottom bar */
+        @media (max-width: 768px) {
+            #JotformAgent-01a0aea378c070008d1714c625296f725b8d,
+            div[id*="JotformAgent"] {
+                bottom: 72px !important;
+                right: 14px !important;
+            }
+        }
+
+        /* Modal Elevation: Ensure all modals sit comfortably above everything */
+        .fixed.inset-0.z-50 {
+            z-index: 999999 !important;
+        }
+
+        /* When fullscreen modal is open, prevent floating launcher distraction */
+        .modal-active-state #JotformAgent-01a0aea378c070008d1714c625296f725b8d,
+        .modal-active-state div[id*="JotformAgent"] {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
     </style>
 </head>
-<body class="h-full flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white" x-data="auraApp()" x-init="initApp()">
+<body class="h-full flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white" x-data="auraApp()" x-init="initApp()" :class="{'modal-active-state': isAnyModalOpen()}">
 
     <div id="pulse-shield-banners">
         <!-- REAL-TIME SMS / WHATSAPP OTP NOTIFICATION BANNER -->
@@ -1080,7 +1109,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 translate-y-4"
-             class="fixed bottom-6 right-6 z-50 max-w-sm w-full px-3">
+             class="fixed bottom-24 right-6 z-[999999] max-w-sm w-full px-3">
             <div class="bg-slate-900/95 border border-cyan-400/50 rounded-2xl p-4 shadow-2xl backdrop-blur-md text-white flex items-center gap-3">
                 <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-base flex-shrink-0">
                     🛡️
@@ -1602,7 +1631,7 @@
                             :class="activeTab === 'chatbot' ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200 border border-transparent'"
                             class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                        Clinical Pharmacology AI
+                        Pulse Shield AI Assistant
                     </button>
                 </nav>
                 <!-- Mini 3D Card Widget in Sidebar (Suggestion C) -->
@@ -1741,12 +1770,12 @@
                         </div>
                     </div>
 
-                    <!-- Action 3: Consult Provider -->
+                    <!-- Action 3: Consult AI Assistant -->
                     <div @click="switchTab('chatbot')" class="p-4 rounded-2xl bg-[#0c2230]/90 hover:bg-[#0f2c3e] border border-cyan-500/25 cursor-pointer transition-all hover:border-cyan-400/50 shadow-lg group flex items-center justify-between">
                         <div>
-                            <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-wider block">CONSULT PROVIDER</span>
-                            <h4 class="text-sm font-black text-white mt-0.5 group-hover:text-cyan-200">Clinical AI Specialist</h4>
-                            <p class="text-[11px] text-slate-400 mt-1">Pharmacology & drug guidance</p>
+                            <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-wider block">CONSULT AI</span>
+                            <h4 class="text-sm font-black text-white mt-0.5 group-hover:text-cyan-200">Pulse Shield AI Assistant</h4>
+                            <p class="text-[11px] text-slate-400 mt-1">24/7 intelligent health guidance</p>
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -2843,104 +2872,45 @@
 
 
             <!-- ============================================================ -->
-            <!-- TAB 7: CLINICAL PHARMACOLOGY AI CHATBOT                     -->
+            <!-- TAB 7: PULSE SHIELD AI ASSISTANT (POWERED BY NOUPE AI)       -->
             <!-- ============================================================ -->
             <div x-show="activeTab === 'chatbot'" class="p-4 sm:p-8 space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            <span>💬 Clinical Pharmacology AI Assistant</span>
-                        </h2>
-                        <p class="text-xs text-slate-400">Ask why any tablet is used, how it works, dosage, warnings, and alternatives in your language.</p>
+                        <div class="flex items-center gap-2.5">
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                                <span>🤖 Pulse Shield AI Assistant</span>
+                            </h2>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                                Live AI Agent
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">24/7 intelligent health companion. Ask health questions, discuss symptoms, medications, and wellness guidance.</p>
                     </div>
 
-                    <div class="flex flex-wrap gap-1.5 p-1 bg-slate-950 border border-slate-800 rounded-xl">
-                        <button @click="setLanguage('te')" 
-                                :class="selectedLanguage === 'te' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            తెలుగు (Telugu)
-                        </button>
-                        <button @click="setLanguage('hi')" 
-                                :class="selectedLanguage === 'hi' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            हिन्दी (Hindi)
-                        </button>
-                        <button @click="setLanguage('ta')" 
-                                :class="selectedLanguage === 'ta' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            தமிழ் (Tamil)
-                        </button>
-                        <button @click="setLanguage('en')" 
-                                :class="selectedLanguage === 'en' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                            English
-                        </button>
+                    <div class="flex items-center gap-2">
+                        <a href="https://www.noupe.com/agent/01a0aea378c070008d1714c625296f725b8d" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-[#0b2231] hover:bg-[#0e2c3f] text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center gap-2 transition shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <span>Open Dedicated Page</span>
+                        </a>
                     </div>
                 </div>
 
-                <div class="bg-slate-950/90 rounded-2xl border border-slate-800/80 shadow-2xl flex flex-col h-[520px] overflow-hidden">
-                    <div class="px-5 py-3.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">AI</div>
-                            <div>
-                                <h4 class="text-xs font-bold text-white">Clinical Pharmacology Specialist</h4>
-                                <span class="text-[10px] text-emerald-400 font-medium">● Accurate Drug Answers in <span x-text="getLanguageLabel()"></span></span>
-                            </div>
-                        </div>
-
-                        <button @click="speakLastMessage()" class="px-3 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
-                            <span>🔊 Read Aloud Voice</span>
-                        </button>
+                <!-- Dedicated Embedded Assistant Container -->
+                <div class="bg-gradient-to-b from-[#091b26] to-[#040e15] rounded-3xl border border-cyan-500/30 shadow-2xl p-2 sm:p-4 overflow-hidden relative">
+                    <div class="w-full h-[680px] rounded-2xl overflow-hidden bg-[#07131b] relative shadow-inner border border-cyan-500/20">
+                        <iframe 
+                            src="https://www.noupe.com/agent/01a0aea378c070008d1714c625296f725b8d" 
+                            title="Pulse Shield AI Assistant" 
+                            class="w-full h-full border-0"
+                            allow="microphone *; display-capture *;">
+                        </iframe>
                     </div>
 
-                    <div id="chatMessagesBox" class="flex-1 p-5 overflow-y-auto space-y-4">
-                        <template x-for="(msg, i) in chatMessages" :key="i">
-                            <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
-                                <div :class="msg.role === 'user' ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-none' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-2xl rounded-tl-none'"
-                                     class="max-w-[85%] sm:max-w-[75%] p-4 text-xs sm:text-sm leading-relaxed shadow">
-                                    <div class="whitespace-pre-line" x-text="msg.text"></div>
-                                </div>
-                            </div>
-                        </template>
-                        <div x-show="isChatBotTyping" class="flex justify-start">
-                            <div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl rounded-tl-none px-4 py-3 text-xs flex items-center gap-2">
-                                <span class="animate-bounce">●</span>
-                                <span class="animate-bounce delay-100">●</span>
-                                <span class="animate-bounce delay-200">●</span>
-                                <span>Analyzing clinical pharmacology database...</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Prompt Suggestions (Including specific tablet questions) -->
-                    <div class="px-4 py-2 bg-slate-900/50 border-t border-slate-800/80 flex gap-2 overflow-x-auto text-xs">
-                        <button @click="sendPredefinedQuery('Why is this tablet used for? Explain all 4 medicines')" 
-                                class="whitespace-nowrap px-3 py-1 bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/30 rounded-lg text-[11px] font-semibold transition">
-                            💊 Why is this tablet used for?
-                        </button>
-                        <button @click="sendPredefinedQuery('Why is Augmentin 625 used and how does it work?')" 
-                                class="whitespace-nowrap px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] transition">
-                            🔬 Why Augmentin 625?
-                        </button>
-                        <button @click="sendPredefinedQuery('Why is Pan-D prescribed before food?')" 
-                                class="whitespace-nowrap px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] transition">
-                            🛡️ Why Pan-D?
-                        </button>
-                        <button @click="sendPredefinedQuery('What is Ascoril-LS syrup used for?')" 
-                                class="whitespace-nowrap px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] transition">
-                            🫁 Why Ascoril-LS?
-                        </button>
-                    </div>
-
-                    <form @submit.prevent="sendMessage()" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
-                        <input type="text" x-model="chatInput" placeholder="Ask: 'Why this tablet is used for?' in Telugu, Hindi, Tamil, or English..."
-                               class="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
-                        <button type="submit" :disabled="!chatInput.trim() || isChatBotTyping"
-                                class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                            <span>Send</span>
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </button>
-                    </form>
+                    <!-- Noupe AI Embed Script Required by User -->
+                    <script src='https://www.noupe.com/embed/01a0aea378c070008d1714c625296f725b8d.js'></script>
                 </div>
             </div>
 
@@ -4421,7 +4391,7 @@
                 isChatBotTyping: false,
                 chatMessages: [],
 
-                // Clinical Pharmacology Dictionary (Local fallback)
+                // Clinical AI Knowledge Dictionary (Local fallback)
                 clinicalDrugAnswers: {
                     te: {
                         augmentin: "💊 **Augmentin 625 Duo ఎందుకు వాడాలి:**\nఇది శక్తివంతమైన బ్రాడ్-స్పెక్ట్రమ్ యాంటీబయాటిక్. మీ ఊపిరితిత్తులు మరియు శ్వాసనాళాల్లోని బ్యాక్టీరియాను పూర్తిగా చంపడానికి వాడతారు. ఉదయం మరియు రాత్రి భోజనం తిన్న వెంటనే వేసుకోవాలి.",
@@ -5886,13 +5856,13 @@ ${report.doctor_notes || 'All physiological and biochemical parameters verified 
                     alert('Medication added to your prescription!');
                 },
 
-                // --- Multilingual Assistant & Drug Pharmacology Engine ---
+                // --- Multilingual Assistant & Medical Knowledge Engine ---
                 initChatWelcome() {
                     const welcomes = {
                         te: "నమస్కారం! నేను మీ Pulse Shield AI వైద్య నిపుణుడిని.\nమీరు మీ మందులు ఎందుకు వాడాలి, ఏ సమయంలో వేసుకోవాలి, లేదా రికవరీ సమయం గురించి అడగవచ్చు.",
                         hi: "नमस्ते! मैं आपका Pulse Shield AI मेडिकल असिस्टेंट हूँ। आप मुझसे पूछ सकते हैं कि आपकी दवाइयां किस काम आती हैं और उन्हें कब लेना है।",
                         ta: "வணக்கம்! நான் உங்கள் Pulse Shield AI மருத்துவ உதவியாளர். மருந்துகள் எதற்குப் பயன்படுகின்றன என்று நீங்கள் கேட்கலாம்.",
-                        en: "Hello! I am your Pulse Shield Clinical Pharmacology AI. You can ask me why any tablet is prescribed, its mechanism of action, or timing schedule."
+                        en: "Hello! I am your Pulse Shield AI Assistant. You can ask me any health, medication, or wellness questions."
                     };
                     this.chatMessages = [{ role: 'assistant', text: welcomes[this.selectedLanguage] || welcomes['en'] }];
                 },
@@ -5918,7 +5888,7 @@ ${report.doctor_notes || 'All physiological and biochemical parameters verified 
 
                     const lower = text.toLowerCase();
 
-                    // 1. Check local clinical pharmacology database for specific tablet queries
+                    // 1. Check local clinical database for specific tablet queries
                     let localReply = null;
                     const langDict = this.clinicalDrugAnswers[this.selectedLanguage] || this.clinicalDrugAnswers['en'];
 
@@ -5936,7 +5906,7 @@ ${report.doctor_notes || 'All physiological and biochemical parameters verified 
                         return;
                     }
 
-                    // 2. Fetch from backend pharmacology AI
+                    // 2. Fetch from backend AI service
                     const apiRes = await this.apiFetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

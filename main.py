@@ -959,7 +959,7 @@ SAMPLE_PRESCRIPTION_DATA = {
     ]
 }
 
-# Clinical Pharmacology Drug Knowledge Base (for deep, accurate chatbot answers)
+# Pulse Shield Medical Knowledge Base (for deep, accurate chatbot answers)
 DRUG_PHARMACOLOGY_KB = {
     "augmentin": {
         "name": "Augmentin 625 Duo (Amoxicillin + Potassium Clavulanate)",
@@ -1735,7 +1735,7 @@ async def add_manual_prescription(payload: ManualPrescriptionRequest):
     return {"status": "success", "message": "Medication added manually.", "medication": new_med, "all": SAMPLE_PRESCRIPTION_DATA}
 
 
-# --- Multilingual AI Chatbot & Clinical Pharmacology Engine ---
+# --- Multilingual AI Chatbot & Medical Guidance Engine ---
 @app.post("/api/chat")
 async def medical_chat(payload: ChatRequest):
     lang = payload.language.lower() if payload.language in MULTILINGUAL_TRANSLATIONS else "en"
