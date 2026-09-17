@@ -11,7 +11,7 @@
             var search = window.location.search;
             
             // Base path: e.g. '/healthtech' on github.io, or ''
-            var repoBase = origin.includes('github.io') ? '/healthtech' : '';
+            var repoBase = origin.includes('github.io') ? (pathname.split('/')[1] ? '/' + pathname.split('/')[1] : '') : '';
             
             if (pathname.includes('emergency')) {
                 // Extract health ID from URL path if passed like /emergency/AH-2026-8849-IN

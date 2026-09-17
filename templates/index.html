@@ -4846,7 +4846,7 @@
                 },
 
                 getEmergencyWebUrl() {
-                    let base = "https://hemanthp-stack.github.io/healthtech/emergency.html";
+                    let base = "https://hemanthp-stack.github.io/patientHealthCare/emergency.html";
                     if (window.location.hostname.includes('github.io')) {
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
                         base = `${window.location.origin}${path}/emergency.html`;
@@ -5342,13 +5342,13 @@
                         }
                         if (report.file_url.startsWith('./') || report.file_url.startsWith('/')) {
                             const origin = window.location.origin;
-                            const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                            const pathPrefix = window.location.pathname.includes('/patientHealthCare') ? '/patientHealthCare' : (window.location.pathname.includes('/healthtech') ? '/healthtech' : '');
                             const cleanPath = report.file_url.replace(/^(\.\/|\/)/, '');
                             return `${origin}${pathPrefix}/${cleanPath}`;
                         }
                     }
                     const origin = window.location.origin;
-                    const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                    const pathPrefix = window.location.pathname.includes('/patientHealthCare') ? '/patientHealthCare' : (window.location.pathname.includes('/healthtech') ? '/healthtech' : '');
                     const fileName = report.file_name || 'CBC_Lab_Report_March2026.pdf';
                     return `${origin}${pathPrefix}/reports/${fileName}`;
                 },
