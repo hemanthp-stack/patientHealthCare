@@ -319,59 +319,551 @@ HEALTH_ISSUE_DATA = {
 # Nearby Hospitals Directory
 NEARBY_HOSPITALS_DATABASE = [
     {
-        "id": "HOSP-1",
+        "id": "HYD-1",
         "name": "Apollo Health City, Jubilee Hills",
-        "location": "Jubilee Hills, Road No. 72, Hyderabad",
-        "distance": "1.2 km away",
-        "rating": "4.9 ⭐ (14,200+ Reviews)",
-        "specialties": ["Pulmonology", "Cardiology", "Emergency ICU", "Oncology"],
+        "city": "Hyderabad",
+        "location": "Road No. 72, Film Nagar, Jubilee Hills, Hyderabad",
+        "lat": 17.4325,
+        "lon": 78.4071,
+        "rating": "4.9 \u2b50 (14,200+ Reviews)",
+        "specialties": [
+            "Pulmonology",
+            "Cardiology",
+            "Emergency ICU",
+            "Oncology"
+        ],
         "emergency_phone": "+91 40 2360 7777",
         "icu_beds_available": "14 Beds Available",
-        "is_selected": True
+        "distance": "1.2 km away"
     },
     {
-        "id": "HOSP-2",
+        "id": "HYD-2",
         "name": "Care Hospitals, Banjara Hills",
+        "city": "Hyderabad",
         "location": "Road No. 1, Banjara Hills, Hyderabad",
-        "distance": "2.4 km away",
-        "rating": "4.8 ⭐ (9,800+ Reviews)",
-        "specialties": ["Internal Medicine", "Pulmonology", "Critical Care", "Neurology"],
+        "lat": 17.4156,
+        "lon": 78.4487,
+        "rating": "4.8 \u2b50 (9,800+ Reviews)",
+        "specialties": [
+            "Internal Medicine",
+            "Pulmonology",
+            "Critical Care",
+            "Neurology"
+        ],
         "emergency_phone": "+91 40 6165 6565",
         "icu_beds_available": "9 Beds Available",
-        "is_selected": False
+        "distance": "2.4 km away"
     },
     {
-        "id": "HOSP-3",
+        "id": "HYD-3",
         "name": "Yashoda Hospitals, Somajiguda",
+        "city": "Hyderabad",
         "location": "Raj Bhavan Road, Somajiguda, Hyderabad",
-        "distance": "3.1 km away",
-        "rating": "4.8 ⭐ (11,400+ Reviews)",
-        "specialties": ["Pulmonary Medicine", "Cardio-Thoracic", "Nephrology"],
+        "lat": 17.4262,
+        "lon": 78.4578,
+        "rating": "4.8 \u2b50 (11,400+ Reviews)",
+        "specialties": [
+            "Pulmonary Medicine",
+            "Cardio-Thoracic",
+            "Nephrology"
+        ],
         "emergency_phone": "+91 40 4567 4567",
         "icu_beds_available": "18 Beds Available",
-        "is_selected": False
+        "distance": "3.1 km away"
     },
     {
-        "id": "HOSP-4",
-        "name": "KIMS Hospitals, Secunderabad",
-        "location": "Minister Road, Secunderabad",
-        "distance": "4.8 km away",
-        "rating": "4.7 ⭐ (8,900+ Reviews)",
-        "specialties": ["Chest Medicine", "Organ Transplant", "Trauma Care"],
-        "emergency_phone": "+91 40 4488 5000",
-        "icu_beds_available": "12 Beds Available",
-        "is_selected": False
-    },
-    {
-        "id": "HOSP-5",
+        "id": "HYD-4",
         "name": "AIG Hospitals, Gachibowli",
+        "city": "Hyderabad",
         "location": "Mindspace Road, Gachibowli, Hyderabad",
-        "distance": "6.2 km away",
-        "rating": "4.9 ⭐ (16,500+ Reviews)",
-        "specialties": ["Gastroenterology", "Pulmonology", "Advanced Diagnostics"],
+        "lat": 17.4419,
+        "lon": 78.3619,
+        "rating": "4.9 \u2b50 (16,500+ Reviews)",
+        "specialties": [
+            "Gastroenterology",
+            "Pulmonology",
+            "Advanced Diagnostics"
+        ],
         "emergency_phone": "+91 40 4244 4222",
         "icu_beds_available": "22 Beds Available",
-        "is_selected": False
+        "distance": "6.2 km away"
+    },
+    {
+        "id": "HYD-5",
+        "name": "KIMS Hospitals, Secunderabad",
+        "city": "Hyderabad",
+        "location": "Minister Road, Secunderabad, Hyderabad",
+        "lat": 17.4399,
+        "lon": 78.4983,
+        "rating": "4.7 \u2b50 (8,900+ Reviews)",
+        "specialties": [
+            "Chest Medicine",
+            "Organ Transplant",
+            "Trauma Care"
+        ],
+        "emergency_phone": "+91 40 4488 5000",
+        "icu_beds_available": "12 Beds Available",
+        "distance": "7.5 km away"
+    },
+    {
+        "id": "HYD-6",
+        "name": "Continental Hospitals, Financial District",
+        "city": "Hyderabad",
+        "location": "Nanakramguda, Financial District, Gachibowli, Hyderabad",
+        "lat": 17.4183,
+        "lon": 78.3444,
+        "rating": "4.8 \u2b50 (7,200+ Reviews)",
+        "specialties": [
+            "Emergency & Trauma",
+            "Cardiology",
+            "Pulmonology"
+        ],
+        "emergency_phone": "+91 40 6700 0000",
+        "icu_beds_available": "15 Beds Available",
+        "distance": "8.8 km away"
+    },
+    {
+        "id": "BLR-1",
+        "name": "Manipal Hospital, HAL Old Airport Road",
+        "city": "Bengaluru",
+        "location": "98, HAL Old Airport Road, Kodihalli, Bengaluru",
+        "lat": 12.9592,
+        "lon": 77.6534,
+        "rating": "4.9 \u2b50 (18,400+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Pulmonology",
+            "Emergency ICU",
+            "Neurology"
+        ],
+        "emergency_phone": "+91 80 2502 4444",
+        "icu_beds_available": "19 Beds Available",
+        "distance": "1.8 km away"
+    },
+    {
+        "id": "BLR-2",
+        "name": "Apollo Hospitals, Bannerghatta Road",
+        "city": "Bengaluru",
+        "location": "154/11, Opp IIMB, Bannerghatta Road, Bengaluru",
+        "lat": 12.8943,
+        "lon": 77.5982,
+        "rating": "4.8 \u2b50 (15,600+ Reviews)",
+        "specialties": [
+            "Oncology",
+            "Cardiothoracic",
+            "Pulmonology"
+        ],
+        "emergency_phone": "+91 80 2630 4050",
+        "icu_beds_available": "16 Beds Available",
+        "distance": "3.4 km away"
+    },
+    {
+        "id": "BLR-3",
+        "name": "Fortis Hospital, Bannerghatta Road",
+        "city": "Bengaluru",
+        "location": "154/9, Bannerghatta Road, Opp IIMB, Bengaluru",
+        "lat": 12.8956,
+        "lon": 77.5991,
+        "rating": "4.8 \u2b50 (12,100+ Reviews)",
+        "specialties": [
+            "Emergency Trauma",
+            "Pulmonology",
+            "Cardiac Care"
+        ],
+        "emergency_phone": "+91 80 6621 4444",
+        "icu_beds_available": "11 Beds Available",
+        "distance": "3.6 km away"
+    },
+    {
+        "id": "BLR-4",
+        "name": "Narayana Institute of Cardiac Sciences",
+        "city": "Bengaluru",
+        "location": "258/A, Bommasandra Industrial Area, Anekal Taluk, Bengaluru",
+        "lat": 12.8021,
+        "lon": 77.6974,
+        "rating": "4.9 \u2b50 (21,000+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Heart Transplant",
+            "Critical ICU"
+        ],
+        "emergency_phone": "+91 80 7122 2222",
+        "icu_beds_available": "28 Beds Available",
+        "distance": "7.2 km away"
+    },
+    {
+        "id": "BLR-5",
+        "name": "Aster CMI Hospital, Hebbal",
+        "city": "Bengaluru",
+        "location": "No. 43/42, NH 44, Sahakar Nagar, Hebbal, Bengaluru",
+        "lat": 13.0561,
+        "lon": 77.5925,
+        "rating": "4.8 \u2b50 (13,400+ Reviews)",
+        "specialties": [
+            "Multi-Organ Transplant",
+            "Pulmonology",
+            "Trauma"
+        ],
+        "emergency_phone": "+91 80 4342 0100",
+        "icu_beds_available": "14 Beds Available",
+        "distance": "5.5 km away"
+    },
+    {
+        "id": "BOM-1",
+        "name": "Lilavati Hospital & Research Centre, Bandra",
+        "city": "Mumbai",
+        "location": "A-791, Bandra Reclamation, Bandra West, Mumbai",
+        "lat": 19.0519,
+        "lon": 72.8291,
+        "rating": "4.9 \u2b50 (17,800+ Reviews)",
+        "specialties": [
+            "Critical Care ICU",
+            "Cardiology",
+            "Pulmonology"
+        ],
+        "emergency_phone": "+91 22 2675 1000",
+        "icu_beds_available": "17 Beds Available",
+        "distance": "2.1 km away"
+    },
+    {
+        "id": "BOM-2",
+        "name": "Kokilaben Dhirubhai Ambani Hospital, Andheri",
+        "city": "Mumbai",
+        "location": "Rao Saheb Achutrao Patwardhan Marg, Four Bungalows, Andheri West, Mumbai",
+        "lat": 19.1314,
+        "lon": 72.8252,
+        "rating": "4.9 \u2b50 (22,500+ Reviews)",
+        "specialties": [
+            "Emergency Medicine",
+            "Robotic Surgery",
+            "Cardio-Pulmonary"
+        ],
+        "emergency_phone": "+91 22 4269 6969",
+        "icu_beds_available": "24 Beds Available",
+        "distance": "3.8 km away"
+    },
+    {
+        "id": "BOM-3",
+        "name": "P. D. Hinduja Hospital, Mahim",
+        "city": "Mumbai",
+        "location": "Veer Savarkar Marg, Mahim West, Mumbai",
+        "lat": 19.033,
+        "lon": 72.8402,
+        "rating": "4.8 \u2b50 (14,900+ Reviews)",
+        "specialties": [
+            "Pulmonology",
+            "Infectious Diseases",
+            "Cardiology"
+        ],
+        "emergency_phone": "+91 22 2445 1515",
+        "icu_beds_available": "13 Beds Available",
+        "distance": "4.2 km away"
+    },
+    {
+        "id": "BOM-4",
+        "name": "Nanavati Max Super Speciality Hospital, Vile Parle",
+        "city": "Mumbai",
+        "location": "SV Road, LIC Colony, Suresh Colony, Vile Parle West, Mumbai",
+        "lat": 19.0964,
+        "lon": 72.8415,
+        "rating": "4.8 \u2b50 (11,300+ Reviews)",
+        "specialties": [
+            "Heart & Lung Institute",
+            "Neurosciences",
+            "ICU"
+        ],
+        "emergency_phone": "+91 22 6836 0000",
+        "icu_beds_available": "15 Beds Available",
+        "distance": "4.9 km away"
+    },
+    {
+        "id": "DEL-1",
+        "name": "AIIMS (All India Institute of Medical Sciences)",
+        "city": "Delhi",
+        "location": "Sri Aurobindo Marg, Ansari Nagar, New Delhi",
+        "lat": 28.5672,
+        "lon": 77.21,
+        "rating": "4.9 \u2b50 (35,000+ Reviews)",
+        "specialties": [
+            "National Apex Trauma",
+            "Pulmonology",
+            "Critical ICU"
+        ],
+        "emergency_phone": "+91 11 2658 8500",
+        "icu_beds_available": "35 Beds Available",
+        "distance": "2.5 km away"
+    },
+    {
+        "id": "DEL-2",
+        "name": "Medanta - The Medicity, Gurugram",
+        "city": "Delhi",
+        "location": "CH Bakhtawar Singh Road, Sector 38, Gurugram, Delhi NCR",
+        "lat": 28.4395,
+        "lon": 77.0422,
+        "rating": "4.9 \u2b50 (28,000+ Reviews)",
+        "specialties": [
+            "Chest Surgery",
+            "Cardiology",
+            "Emergency ICU"
+        ],
+        "emergency_phone": "+91 124 414 1414",
+        "icu_beds_available": "31 Beds Available",
+        "distance": "4.8 km away"
+    },
+    {
+        "id": "DEL-3",
+        "name": "Max Super Speciality Hospital, Saket",
+        "city": "Delhi",
+        "location": "1, 2, Press Enclave Marg, Saket Institutional Area, New Delhi",
+        "lat": 28.5282,
+        "lon": 77.2117,
+        "rating": "4.8 \u2b50 (19,200+ Reviews)",
+        "specialties": [
+            "Pulmonology",
+            "Cardiac Care",
+            "Critical Care"
+        ],
+        "emergency_phone": "+91 11 2651 5050",
+        "icu_beds_available": "18 Beds Available",
+        "distance": "3.9 km away"
+    },
+    {
+        "id": "DEL-4",
+        "name": "Indraprastha Apollo Hospitals, Sarita Vihar",
+        "city": "Delhi",
+        "location": "Delhi Mathura Road, Sarita Vihar, New Delhi",
+        "lat": 28.5398,
+        "lon": 77.2831,
+        "rating": "4.8 \u2b50 (16,700+ Reviews)",
+        "specialties": [
+            "Emergency Trauma",
+            "Cardiology",
+            "Organ Transplant"
+        ],
+        "emergency_phone": "+91 11 2692 5858",
+        "icu_beds_available": "20 Beds Available",
+        "distance": "5.1 km away"
+    },
+    {
+        "id": "MAA-1",
+        "name": "Apollo Main Hospital, Greams Road",
+        "city": "Chennai",
+        "location": "21 Greams Lane, Thousand Lights, Greams Road, Chennai",
+        "lat": 13.0577,
+        "lon": 80.2514,
+        "rating": "4.9 \u2b50 (24,000+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Pulmonology",
+            "Emergency Trauma"
+        ],
+        "emergency_phone": "+91 44 2829 0200",
+        "icu_beds_available": "26 Beds Available",
+        "distance": "1.9 km away"
+    },
+    {
+        "id": "MAA-2",
+        "name": "MIOT International, Manapakkam",
+        "city": "Chennai",
+        "location": "4/112, Mount Poonamallee High Rd, Manapakkam, Chennai",
+        "lat": 13.0232,
+        "lon": 80.1772,
+        "rating": "4.8 \u2b50 (13,800+ Reviews)",
+        "specialties": [
+            "Orthopedics",
+            "Pulmonary Critical Care",
+            "ICU"
+        ],
+        "emergency_phone": "+91 44 4200 2288",
+        "icu_beds_available": "16 Beds Available",
+        "distance": "4.2 km away"
+    },
+    {
+        "id": "MAA-3",
+        "name": "Fortis Malar Hospital, Adyar",
+        "city": "Chennai",
+        "location": "52, 1st Main Rd, Gandhi Nagar, Adyar, Chennai",
+        "lat": 13.0067,
+        "lon": 80.2573,
+        "rating": "4.7 \u2b50 (11,000+ Reviews)",
+        "specialties": [
+            "Cardio-Thoracic",
+            "Vascular Surgery",
+            "Emergency"
+        ],
+        "emergency_phone": "+91 44 4289 2222",
+        "icu_beds_available": "10 Beds Available",
+        "distance": "3.1 km away"
+    },
+    {
+        "id": "PNQ-1",
+        "name": "Ruby Hall Clinic, Sassoon Road",
+        "city": "Pune",
+        "location": "40, Sassoon Road, Sangamvadi, Pune",
+        "lat": 18.5312,
+        "lon": 73.877,
+        "rating": "4.8 \u2b50 (15,200+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Pulmonology",
+            "Emergency Trauma"
+        ],
+        "emergency_phone": "+91 20 6645 5100",
+        "icu_beds_available": "19 Beds Available",
+        "distance": "2.2 km away"
+    },
+    {
+        "id": "PNQ-2",
+        "name": "Jupiter Hospital, Baner",
+        "city": "Pune",
+        "location": "Near Prathamesh Park, Aundh-Baner Link Road, Baner, Pune",
+        "lat": 18.5583,
+        "lon": 73.7885,
+        "rating": "4.9 \u2b50 (10,400+ Reviews)",
+        "specialties": [
+            "Critical Care",
+            "Neurology",
+            "Pulmonary Rehab"
+        ],
+        "emergency_phone": "+91 20 2799 2222",
+        "icu_beds_available": "14 Beds Available",
+        "distance": "3.8 km away"
+    },
+    {
+        "id": "CCU-1",
+        "name": "Apollo Multispeciality Hospitals, Canal Circular",
+        "city": "Kolkata",
+        "location": "58, Canal Circular Road, Kadapara, Kankurgachi, Kolkata",
+        "lat": 22.5768,
+        "lon": 88.4014,
+        "rating": "4.8 \u2b50 (18,900+ Reviews)",
+        "specialties": [
+            "Cardiac Sciences",
+            "Pulmonology",
+            "Emergency ICU"
+        ],
+        "emergency_phone": "+91 33 2320 3040",
+        "icu_beds_available": "21 Beds Available",
+        "distance": "2.7 km away"
+    },
+    {
+        "id": "CCU-2",
+        "name": "Fortis Hospital, Anandapur, EM Bypass",
+        "city": "Kolkata",
+        "location": "730, Anandapur, EM Bypass Road, Kolkata",
+        "lat": 22.5186,
+        "lon": 88.4035,
+        "rating": "4.8 \u2b50 (14,500+ Reviews)",
+        "specialties": [
+            "Emergency Care",
+            "Pulmonology",
+            "Cardiology"
+        ],
+        "emergency_phone": "+91 33 6628 4444",
+        "icu_beds_available": "16 Beds Available",
+        "distance": "3.9 km away"
+    },
+    {
+        "id": "AP-1",
+        "name": "Apollo Hospitals, Ramnagar, Visakhapatnam",
+        "city": "Visakhapatnam",
+        "location": "Waltair Main Road, Ramnagar, Visakhapatnam, AP",
+        "lat": 17.7214,
+        "lon": 83.3106,
+        "rating": "4.9 \u2b50 (9,400+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Pulmonology",
+            "Trauma ICU"
+        ],
+        "emergency_phone": "+91 891 272 7272",
+        "icu_beds_available": "15 Beds Available",
+        "distance": "1.9 km away"
+    },
+    {
+        "id": "AP-2",
+        "name": "Care Hospitals, Maharani Peta, Vizag",
+        "city": "Visakhapatnam",
+        "location": "AS Raja Complex, Waltair Main Rd, Maharani Peta, Visakhapatnam",
+        "lat": 17.7088,
+        "lon": 83.3031,
+        "rating": "4.8 \u2b50 (7,800+ Reviews)",
+        "specialties": [
+            "Critical Care",
+            "Cardiology",
+            "Chest Medicine"
+        ],
+        "emergency_phone": "+91 891 304 1444",
+        "icu_beds_available": "11 Beds Available",
+        "distance": "2.8 km away"
+    },
+    {
+        "id": "AP-3",
+        "name": "Manipal Hospital, Tadepalli, Vijayawada",
+        "city": "Vijayawada",
+        "location": "Near Kanaka Durga Varadhi, Tadepalli, Vijayawada, AP",
+        "lat": 16.4883,
+        "lon": 80.6072,
+        "rating": "4.8 \u2b50 (8,900+ Reviews)",
+        "specialties": [
+            "Emergency Trauma",
+            "Pulmonology",
+            "Cardiology"
+        ],
+        "emergency_phone": "+91 866 676 7777",
+        "icu_beds_available": "14 Beds Available",
+        "distance": "2.5 km away"
+    },
+    {
+        "id": "AP-4",
+        "name": "Ramesh Hospitals, Collectorate Road, Guntur/Vijayawada",
+        "city": "Vijayawada",
+        "location": "Beside Hindu College Grounds, Collectorate Road, Guntur/Vijayawada",
+        "lat": 16.5185,
+        "lon": 80.6433,
+        "rating": "4.9 \u2b50 (12,300+ Reviews)",
+        "specialties": [
+            "Cardiac ICU",
+            "Pulmonology",
+            "Critical Care"
+        ],
+        "emergency_phone": "+91 863 237 7777",
+        "icu_beds_available": "18 Beds Available",
+        "distance": "3.7 km away"
+    },
+    {
+        "id": "AMD-1",
+        "name": "Apollo Hospitals, Gandhinagar / Ahmedabad",
+        "city": "Ahmedabad",
+        "location": "Plot No. 1A, Bhat GIDC Estate, Gandhinagar/Ahmedabad",
+        "lat": 23.1118,
+        "lon": 72.6321,
+        "rating": "4.9 \u2b50 (16,200+ Reviews)",
+        "specialties": [
+            "Cardiology",
+            "Pulmonology",
+            "Emergency ICU"
+        ],
+        "emergency_phone": "+91 79 6670 1800",
+        "icu_beds_available": "20 Beds Available",
+        "distance": "3.1 km away"
+    },
+    {
+        "id": "AMD-2",
+        "name": "Zydus Hospital, Thaltej, SG Highway",
+        "city": "Ahmedabad",
+        "location": "Zydus Hospitals Road, SG Highway, Thaltej, Ahmedabad",
+        "lat": 23.0583,
+        "lon": 72.5074,
+        "rating": "4.8 \u2b50 (14,100+ Reviews)",
+        "specialties": [
+            "Critical Care",
+            "Pulmonology",
+            "Heart Transplant"
+        ],
+        "emergency_phone": "+91 79 6619 0201",
+        "icu_beds_available": "17 Beds Available",
+        "distance": "3.9 km away"
     }
 ]
 
