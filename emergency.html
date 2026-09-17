@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraHealth 360 — Patient Medical Dossier & Reports</title>
+    <title>Pulse Shield — Patient Medical Dossier & Emergency Pass</title>
+    <link rel="icon" type="image/png" href="pulse_shield_logo.png">
+    <link rel="apple-touch-icon" href="pulse_shield_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,8 +24,8 @@
     <header class="bg-gradient-to-r from-red-950/90 via-slate-900/90 to-indigo-950/90 border-b border-red-500/40 sticky top-0 z-40 backdrop-blur-md px-4 py-3 shadow-xl">
         <div class="max-w-3xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-red-600/40">
-                    🚑
+                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-cyan-400/50 p-1 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <img src="pulse_shield_logo.png" alt="Pulse Shield Logo" class="w-8 h-8 object-contain filter drop-shadow-[0_0_6px_rgba(6,182,212,0.6)]">
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -32,7 +34,7 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> VERIFIED
                         </span>
                     </div>
-                    <h1 class="text-sm sm:text-base font-black text-white leading-tight">AuraHealth 360 Patient Dossier</h1>
+                    <h1 class="text-sm sm:text-base font-black text-white leading-tight">Pulse Shield Patient Dossier</h1>
                 </div>
             </div>
             <div class="flex items-center gap-2 no-print">
@@ -475,7 +477,7 @@
 
     <!-- Footer -->
     <footer class="max-w-3xl mx-auto px-4 mt-8 text-center text-xs text-slate-500 space-y-1">
-        <p>AuraHealth 360 National EHR Pass • Verified ABDM Health Infrastructure</p>
+        <p>Pulse Shield National EHR Pass • Verified ABDM Health Infrastructure</p>
         <p class="text-[10px]">Data is encrypted & digitally signed for emergency clinical access.</p>
     </footer>
 
@@ -487,7 +489,7 @@
                     health_id: "AH-2026-8849-IN",
                     name: "Hemanth Kumar",
                     phone: "+91 98765 43210",
-                    email: "hemanth@aurahealth.ai",
+                    email: "hemanth@pulseshield.ai",
                     age: 38,
                     gender: "Male",
                     blood_group: "O+ (Positive)",
@@ -756,7 +758,7 @@
                                     await navigator.share({
                                         files: [file],
                                         title: `Medical Report: ${report.title}`,
-                                        text: `🏥 *AURAHEALTH 360 CLINICAL MEDICAL REPORT*\n📄 ${report.title}\n👤 Patient: ${this.user.name} (${this.user.health_id})\n📅 Date: ${report.date} | Category: ${report.category}\n👨‍⚕️ Doctor: ${report.doctor_name || 'Dr. K. S. Rao, MD'}\n💡 Finding: ${report.doctor_notes || report.notes || 'All physiological parameters within standard reference range.'}\n📎 Direct Document: ${docUrl}`
+                                        text: `🏥 *PULSE SHIELD CLINICAL MEDICAL REPORT*\n📄 ${report.title}\n👤 Patient: ${this.user.name} (${this.user.health_id})\n📅 Date: ${report.date} | Category: ${report.category}\n👨‍⚕️ Doctor: ${report.doctor_name || 'Dr. K. S. Rao, MD'}\n💡 Finding: ${report.doctor_notes || report.notes || 'All physiological parameters within standard reference range.'}\n📎 Direct Document: ${docUrl}`
                                     });
                                     return;
                                 }
@@ -772,7 +774,7 @@
 
                     // 2. WhatsApp message fallback with direct document link
                     const text = encodeURIComponent(
-                        `🏥 *AURAHEALTH 360 — CLINICAL MEDICAL REPORT*\n` +
+                        `🏥 *PULSE SHIELD — CLINICAL MEDICAL REPORT*\n` +
                         `========================================\n` +
                         `📄 *REPORT:* ${report.title}\n` +
                         `👤 *PATIENT:* ${this.user.name} (Health ID: ${this.user.health_id})\n` +

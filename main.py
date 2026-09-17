@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Form
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,7 +20,7 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(
-    title="AuraHealth 360 — Patient Intelligence & 3D Health ID",
+    title="Pulse Shield — Patient Intelligence & 3D Health ID",
     description="Next-generation patient medical portal with 3D ID credentials, prescription OCR decrypter, and multilingual health engine.",
     version="2.3.0"
 )
@@ -39,6 +39,18 @@ REPORTS_DIR = BASE_DIR / "reports"
 REPORTS_DIR.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 app.mount("/reports", StaticFiles(directory=str(REPORTS_DIR)), name="reports")
+ASSETS_DIR = BASE_DIR / "assets"
+ASSETS_DIR.mkdir(exist_ok=True)
+app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
+
+@app.api_route("/pulse_shield_logo.png", methods=["GET", "HEAD"])
+async def get_pulse_shield_logo():
+    return FileResponse(BASE_DIR / "pulse_shield_logo.png", media_type="image/png")
+
+@app.api_route("/favicon.ico", methods=["GET", "HEAD"])
+@app.api_route("/favicon.png", methods=["GET", "HEAD"])
+async def get_favicon():
+    return FileResponse(BASE_DIR / "favicon.png", media_type="image/png")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # --- In-Memory Stores ---
@@ -64,7 +76,7 @@ DEFAULT_USER = {
     "health_id": "AH-2026-8849-IN",
     "name": "Hemanth Kumar",
     "phone": "+91 98765 43210",
-    "email": "hemanth@aurahealth.ai",
+    "email": "hemanth@pulseshield.ai",
     "age": 38,
     "gender": "Male",
     "blood_group": "O+ (Positive)",
@@ -1000,7 +1012,7 @@ DRUG_PHARMACOLOGY_KB = {
 MULTILINGUAL_TRANSLATIONS = {
     "te": {
         "lang_name": "Telugu (తెలుగు)",
-        "welcome": "నమస్కారం! నేను మీ AuraHealth 360 AI వైద్య సహాయకుడిని.\nమీరు మీ మందుల వివరాలు, రికవరీ సమయం లేదా రక్త పరీక్షల గురించి నన్ను అడగవచ్చు.",
+        "welcome": "నమస్కారం! నేను మీ Pulse Shield AI వైద్య సహాయకుడిని.\nమీరు మీ మందుల వివరాలు, రికవరీ సమయం లేదా రక్త పరీక్షల గురించి నన్ను అడగవచ్చు.",
         "rx_summary": "డాక్టర్ కె. ఎస్. రావు గారు మీకు 4 రకాల మందులు సూచించారు: యాంటీబయాటిక్ (Augmentin 625), దగ్గు సిరప్ (Ascoril-LS), అలర్జీ నివారణ మాత్ర (Montair-LC), మరియు గ్యాస్ట్రిక్ మాత్ర (Pan-D).",
         "instructions": [
             "1. Pan-D: ఉదయం పూట బ్రేక్‌ఫాస్ట్‌కి 30 నిమిషాల ముందు ఖాళీ కడుపుతో ఒక టాబ్లెట్ వేసుకోవాలి.",
@@ -1012,7 +1024,7 @@ MULTILINGUAL_TRANSLATIONS = {
     },
     "hi": {
         "lang_name": "Hindi (हिन्दी)",
-        "welcome": "नमस्ते! AuraHealth 360 AI मेडिकल असिस्टेंट में आपका स्वागत है।",
+        "welcome": "नमस्ते! Pulse Shield AI मेडिकल असिस्टेंट में आपका स्वागत है।",
         "rx_summary": "डॉ. के. एस. राव ने आपके ब्रोन्काइटिस के इलाज के लिए 4 दवाइयां दी हैं: एंटीबायोटिक (Augmentin), कफ सिरप (Ascoril-LS), एलर्जी निवारक (Montair-LC), और गैस की गोली (Pan-D)।",
         "instructions": [
             "1. Pan-D: सुबह नाश्ते से 30 मिनट पहले खाली पेट एक कैप्सूल पानी के साथ लें।",
@@ -1024,7 +1036,7 @@ MULTILINGUAL_TRANSLATIONS = {
     },
     "ta": {
         "lang_name": "Tamil (தமிழ்)",
-        "welcome": "வணக்கம்! AuraHealth 360 AI மருத்துவ உதவி மையத்திற்கு வரவேற்கிறோம்.",
+        "welcome": "வணக்கம்! Pulse Shield AI மருத்துவ உதவி மையத்திற்கு வரவேற்கிறோம்.",
         "rx_summary": "மருத்துவர் கே. எஸ். ராவ் உங்கள் மூச்சுக்குழாய் அழற்சிக்கு 4 மருந்துகளை பரிந்துரைத்துள்ளார்: ஆன்டிபயாடிக், இருமல் சிரப், ஒவ்வாமை எதிர்ப்பு மாத்திரை மற்றும் வாயு நிவாரணி.",
         "instructions": [
             "1. Pan-D: காலை உணவுக்கு 30 நிமிடங்களுக்கு முன் வெறும் வயிற்றில் உட்கொள்ளவும்.",
@@ -1036,7 +1048,7 @@ MULTILINGUAL_TRANSLATIONS = {
     },
     "en": {
         "lang_name": "English",
-        "welcome": "Hello! Welcome to AuraHealth 360 Multilingual Clinical AI.",
+        "welcome": "Hello! Welcome to Pulse Shield Multilingual Clinical AI.",
         "rx_summary": "Dr. K. S. Rao prescribed 4 core medications for Acute Bronchitis: Antibiotic (Augmentin 625), Expectorant (Ascoril-LS), Anti-allergic (Montair-LC), and Gastro-protective (Pan-D).",
         "instructions": [
             "1. Pan-D: Take 1 capsule 30-45 mins before breakfast on an empty stomach with water.",
@@ -1121,7 +1133,7 @@ class SelectHospitalRequest(BaseModel):
 async def serve_portal(request: Request):
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "app_name": "AuraHealth 360",
+        "app_name": "Pulse Shield",
         "user": DEFAULT_USER,
         "past_records": PAST_HEALTH_REPORTS,
         "lan_ip": get_lan_ip()
@@ -1137,7 +1149,7 @@ async def serve_emergency_page(request: Request, health_id: str):
     """
     return templates.TemplateResponse("emergency.html", {
         "request": request,
-        "app_name": "AuraHealth 360 — Emergency Responder View",
+        "app_name": "Pulse Shield — Emergency Responder View",
         "user": DEFAULT_USER,
         "vitals": CURRENT_VITALS,
         "current_records": MOCK_RECORDS,
