@@ -4876,22 +4876,70 @@
                 },
 
                 getEmergencyWebUrl() {
-                    if (this.customHostUrl && this.customHostUrl.trim()) {
-                        let base = this.customHostUrl.trim().replace(/\/$/, '');
-                        if (!base.startsWith('http://') && !base.startsWith('https://')) {
-                            base = 'https://' + base;
-                        }
-                        if (base.includes('emergency.html')) {
-                            return `${base}?id=${this.currentUser.health_id}`;
-                        }
-                        return `${base}/emergency/${this.currentUser.health_id}`;
-                    }
+                    let base = "https://hemanthp-stack.github.io/healthtech/emergency.html";
                     if (window.location.hostname.includes('github.io')) {
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
-                        return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
+                        base = `${window.location.origin}${path}/emergency.html`;
+                    } else if (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file')) {
+                        let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+                        base = `${window.location.origin}${path}/emergency.html`;
                     }
-                    // Permanent 99.9% Uptime GitHub Pages Cloud Pass (Works on any phone globally, never shows 'no tunnel here')
-                    return `https://hemanthp-stack.github.io/healthtech/emergency.html?id=${this.currentUser.health_id}`;
+                    if (this.customHostUrl && this.customHostUrl.trim()) {
+                        let custom = this.customHostUrl.trim();
+                        if (!custom.startsWith('http://') && !custom.startsWith('https://')) {
+                            custom = 'https://' + custom;
+                        }
+                        base = custom.includes('emergency.html') ? custom : custom.replace(/\/$/, '') + '/emergency.html';
+                    }
+
+                    const u = this.currentUser || {};
+                    const v = this.liveVitals || {};
+
+                    const q = new URLSearchParams();
+                    q.set('id', u.health_id || 'AH-2026-ACTIVE-IN');
+                    q.set('name', u.name || 'Verified Patient');
+                    q.set('blood', u.blood_group || 'O+ (Positive)');
+                    if (u.phone) q.set('phone', u.phone);
+                    if (u.dob) q.set('dob', u.dob);
+                    if (u.age) q.set('age', u.age);
+                    if (u.gender) q.set('gender', u.gender);
+                    if (u.emergency_contact) q.set('em', u.emergency_contact);
+                    if (u.hospital) q.set('hosp', u.hospital);
+                    if (u.address) q.set('addr', u.address);
+                    if (u.allergies) {
+                        q.set('all', Array.isArray(u.allergies) ? u.allergies.join(', ') : u.allergies);
+                    }
+                    if (v && v.temperature) q.set('temp', v.temperature);
+                    if (v && v.blood_pressure) q.set('bp', v.blood_pressure);
+                    if (v && v.pulse) q.set('pulse', v.pulse);
+                    if (v && v.spo2) q.set('spo2', v.spo2);
+
+                    // Add base64 payload for complete clinical fidelity
+                    try {
+                        const payloadObj = {
+                            name: u.name,
+                            health_id: u.health_id,
+                            blood: u.blood_group,
+                            phone: u.phone,
+                            email: u.email,
+                            dob: u.dob,
+                            age: u.age,
+                            gender: u.gender,
+                            em: u.emergency_contact,
+                            addr: u.address,
+                            hosp: u.hospital,
+                            doc: u.primary_physician,
+                            all: Array.isArray(u.allergies) ? u.allergies : [u.allergies],
+                            temp: v.temperature,
+                            bp: v.blood_pressure,
+                            pulse: v.pulse,
+                            spo2: v.spo2
+                        };
+                        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))));
+                        q.set('d', b64);
+                    } catch(err) {}
+
+                    return `${base}?${q.toString()}`;
                 },
 
                 getFullMedicalDossierText() {

@@ -91,7 +91,7 @@
                     <span class="text-slate-400 font-medium block text-[11px]">🚨 Emergency Contact (Family)</span>
                     <div class="flex items-center justify-between mt-1.5">
                         <span class="font-bold text-red-300 text-sm font-mono" x-text="user.emergency_contact"></span>
-                        <a href="tel:+919123456789" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs transition flex items-center gap-1 shadow">
+                        <a :href="'tel:' + (user.emergency_contact ? user.emergency_contact.replace(/[^0-9+]/g, '') : '+919123456789')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs transition flex items-center gap-1 shadow">
                             <span>📞</span> <span>Call Family</span>
                         </a>
                     </div>
@@ -692,23 +692,70 @@
                 viewingReport: null,
                 initDossier() {
                     const params = new URLSearchParams(window.location.search);
-                    const customId = params.get('id');
-                    if (customId) {
-                        this.user.health_id = customId;
+
+                    // 1. Check for Base64 full profile payload (d parameter)
+                    const dParam = params.get('d');
+                    if (dParam) {
+                        try {
+                            const jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(dParam))));
+                            const p = JSON.parse(jsonStr);
+                            if (p && p.name) {
+                                this.user.name = p.name;
+                                if (p.health_id) this.user.health_id = p.health_id;
+                                if (p.blood) this.user.blood_group = p.blood;
+                                if (p.phone) this.user.phone = p.phone;
+                                if (p.email) this.user.email = p.email;
+                                if (p.dob) this.user.dob = p.dob;
+                                if (p.age) this.user.age = p.age;
+                                if (p.gender) this.user.gender = p.gender;
+                                if (p.em) this.user.emergency_contact = p.em;
+                                if (p.addr) this.user.address = p.addr;
+                                if (p.hosp) this.user.hospital = p.hosp;
+                                if (p.doc) this.user.primary_physician = p.doc;
+                                if (p.all) this.user.allergies = Array.isArray(p.all) ? p.all : [p.all];
+                                if (p.cond) this.user.chronic_conditions = Array.isArray(p.cond) ? p.cond : [p.cond];
+                                if (p.donor) this.user.organ_donor = p.donor;
+
+                                if (p.temp) this.vitals.temperature = p.temp;
+                                if (p.bp) this.vitals.blood_pressure = p.bp;
+                                if (p.pulse) this.vitals.pulse = p.pulse;
+                                if (p.spo2) this.vitals.spo2 = p.spo2;
+                                if (p.sugar) this.vitals.blood_sugar = p.sugar;
+                            }
+                        } catch (err) {
+                            console.warn("Base64 payload parse warning:", err);
+                        }
                     }
+
+                    // 2. Read explicit URL query parameters (which take precedence)
+                    if (params.get('id')) this.user.health_id = params.get('id');
+                    if (params.get('name')) this.user.name = params.get('name');
+                    if (params.get('blood')) this.user.blood_group = params.get('blood');
+                    if (params.get('phone')) this.user.phone = params.get('phone');
+                    if (params.get('dob')) this.user.dob = params.get('dob');
+                    if (params.get('age')) this.user.age = parseInt(params.get('age')) || this.user.age;
+                    if (params.get('gender')) this.user.gender = params.get('gender');
+                    if (params.get('em')) this.user.emergency_contact = params.get('em');
+                    if (params.get('hosp')) this.user.hospital = params.get('hosp');
+                    if (params.get('addr')) this.user.address = params.get('addr');
+                    if (params.get('all')) this.user.allergies = params.get('all').split(',').map(s => s.trim()).filter(Boolean);
+                    if (params.get('temp')) this.vitals.temperature = params.get('temp');
+                    if (params.get('bp')) this.vitals.blood_pressure = params.get('bp');
+                    if (params.get('pulse')) this.vitals.pulse = params.get('pulse');
+                    if (params.get('spo2')) this.vitals.spo2 = params.get('spo2');
+
+                    // 3. Fallback to localStorage if accessed on same device without parameters
                     try {
-                        const stored = localStorage.getItem('aura_user');
-                        if (stored) {
+                        const stored = localStorage.getItem('pulse_shield_profile') || localStorage.getItem('aura_user');
+                        if (stored && !params.get('name') && !params.get('d')) {
                             const parsed = JSON.parse(stored);
                             if (parsed && parsed.name) {
-                                this.user.name = parsed.name;
-                                if (parsed.phone) this.user.phone = parsed.phone;
-                                if (parsed.health_id && !customId) this.user.health_id = parsed.health_id;
-                                if (parsed.hospital) this.user.hospital = parsed.hospital;
+                                this.user = { ...this.user, ...parsed };
                             }
                         }
                     } catch (e) {}
                 },
+
                 filteredEmergencyRecords() {
                     if (this.emergencySelectedCategory === 'all') return this.current_records;
                     return this.current_records.filter(r => r.category === this.emergencySelectedCategory);
