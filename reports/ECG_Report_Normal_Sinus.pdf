@@ -1,0 +1,103 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1906 >>
+stream
+BT
+/F1 18 Tf
+40 800 Td
+(AURAHEALTH 360 - 12-LEAD ELECTROCARDIOGRAM REPORT) Tj
+0 -20 Td
+/F2 11 Tf
+(Department of Cardiology & Electrophysiology | Apollo Health City) Tj
+0 -12 Td
+(National Digital Health Mission Verified | ABDM ISO Certified) Tj
+0 -25 Td
+/F1 13 Tf
+(PATIENT DEMOGRAPHICS & CLINICAL METADATA) Tj
+0 -16 Td
+/F2 10 Tf
+(Patient Name: Rajesh Sharma           Age / Sex: 34 Y / Male) Tj
+0 -14 Td
+(ABHA / Health ID: ABHA-9921-4028-1192   Ref By: Dr. Ramesh Gupta, MD, DM (Cardiology)) Tj
+0 -14 Td
+(Date: 08-Mar-2026                 Reporting Center: Apollo Diagnostic Network) Tj
+0 -25 Td
+/F1 13 Tf
+(ECG TRACE & ELECTROPHYSIOLOGICAL METRICS) Tj
+0 -18 Td
+/F1 9 Tf
+(ELECTROPHYSIOLOGY METRIC     OBSERVED VALUE    REFERENCE INTERVAL) Tj
+0 -14 Td
+/F2 9 Tf
+(Heart Rate                  72 bpm            60 - 100 bpm) Tj
+0 -13 Td
+/F2 9 Tf
+(Rhythm                      Normal Sinus      Normal Sinus Rhythm) Tj
+0 -13 Td
+/F2 9 Tf
+(PR Interval                 152 ms            120 - 200 ms) Tj
+0 -13 Td
+/F2 9 Tf
+(QRS Duration                86 ms             80 - 120 ms) Tj
+0 -13 Td
+/F2 9 Tf
+(QT / QTc Interval           390 / 422 ms      350 - 450 ms) Tj
+0 -13 Td
+/F2 9 Tf
+(P Axis / QRS Axis           54 deg / 62 deg   Normal Axis (0 - 90 deg)) Tj
+0 -13 Td
+/F2 9 Tf
+(ST Segment Elevation        Nil               Zero (< 0.1 mV)) Tj
+0 -13 Td
+/F2 9 Tf
+(T Wave Inversion            Absent            Normal Concordant) Tj
+0 -13 Td
+0 -15 Td
+/F1 11 Tf
+(CLINICAL INTERPRETATION & ADVISORY:) Tj
+0 -15 Td
+/F2 9 Tf
+(1. Normal sinus rhythm at 72 bpm. Zero ectopic complexes or ischemic events.) Tj
+0 -13 Td
+/F2 9 Tf
+(2. Normal intraventricular conduction and standard repolarization pattern.) Tj
+0 -13 Td
+/F2 9 Tf
+(3. Cardiovascular hemodynamics suitable for standard physical activity.) Tj
+0 -13 Td
+0 -20 Td
+/F1 10 Tf
+(Dr. Ramesh Gupta, MD, DM (Cardiology)           ABDM Cryptographic Signature Verified) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000257 00000 n 
+0000002214 00000 n 
+0000002289 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2359
+%%EOF

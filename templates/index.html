@@ -1737,62 +1737,257 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Reports List with VIEW & SHARE Buttons (As Requested) -->
-                <div class="bg-slate-950/80 rounded-2xl border border-slate-800/80 overflow-hidden shadow-xl">
-                    <div class="p-4 border-b border-slate-800/80 flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Clinical Records in Vault (<span x-text="recordsList.length"></span>)</h4>
-                        <span class="text-[11px] text-slate-500">Attending Doctor: Dr. K. S. Rao, MD</span>
+                <!-- ============================================================ -->
+                <!-- DEDICATED SLOT: ACTIVE DOCTOR PRESCRIPTION (Rx)             -->
+                <!-- ============================================================ -->
+                <div class="bg-gradient-to-r from-emerald-950/50 via-slate-950 to-teal-950/40 rounded-3xl border-2 border-emerald-500/40 p-5 sm:p-7 shadow-2xl relative overflow-hidden">
+                    <!-- Background Watermark / Accent -->
+                    <div class="absolute -right-6 -bottom-6 text-9xl font-serif font-black text-emerald-500/5 select-none pointer-events-none">
+                        ℞
                     </div>
 
-                    <div class="divide-y divide-slate-800/60">
-                        <template x-for="rec in recordsList" :key="rec.id">
-                            <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-900/40 transition">
-                                <div class="flex items-start gap-3.5">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-indigo-400 font-bold text-sm">
-                                        <template x-if="rec.file_type && rec.file_type.includes('pdf')"><span>📄</span></template>
-                                        <template x-if="rec.file_type && rec.file_type.includes('image')"><span>🖼️</span></template>
-                                        <template x-if="!rec.file_type || (!rec.file_type.includes('pdf') && !rec.file_type.includes('image'))"><span>📑</span></template>
-                                    </div>
-                                    <div>
-                                        <h5 class="text-sm font-bold text-white" x-text="rec.title"></h5>
-                                        <div class="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
-                                            <span class="text-indigo-400 font-medium" x-text="rec.category"></span>
-                                            <span>•</span>
-                                            <span x-text="rec.date"></span>
-                                            <span>•</span>
-                                            <span x-text="rec.size_kb + ' KB'"></span>
-                                        </div>
-                                        <div class="mt-2 text-xs bg-slate-900/80 p-2.5 rounded-lg border border-slate-800/60 text-slate-300">
-                                            <span class="text-slate-400 font-medium">Doctor Note:</span> <span x-text="rec.doctor_notes"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-2 sm:self-center">
-                                    <span class="px-2.5 py-1 text-xs rounded-full font-medium"
-                                          :class="rec.doctor_status === 'Verified' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'"
-                                          x-text="rec.doctor_status">
-                                    </span>
-
-                                    <!-- VIEW REPORT BUTTON -->
-                                    <button @click="openViewReportModal(rec)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-                                        <span>👁️ View Report</span>
-                                    </button>
-
-                                    <!-- SHARE REPORT BUTTON -->
-                                    <button @click="openShareReportModal(rec)" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-semibold transition flex items-center gap-1">
-                                        <span>🔗 Share</span>
-                                    </button>
-
-                                    <template x-if="isDoctorView && rec.doctor_status !== 'Verified'">
-                                        <button @click="verifyRecordAsDoctor(rec.id)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition shadow">
-                                            ✓ Sign Off
-                                        </button>
-                                    </template>
-                                </div>
+                    <!-- Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-500/20">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl font-serif font-black shadow-inner">
+                                ℞
                             </div>
-                        </template>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                        Active Doctor Prescription Slot
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-mono" x-text="'Rx ID: #' + activePrescription.rx_id"></span>
+                                </div>
+                                <h3 class="text-base sm:text-lg font-black text-white mt-0.5">Apollo Pulmonology & Internal Medicine Prescription</h3>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span x-text="activePrescription.status"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Doctor & Prescription Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4 text-xs">
+                        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Prescribing Specialist</span>
+                            <p class="text-white font-bold text-sm mt-0.5" x-text="activePrescription.doctor_name"></p>
+                            <p class="text-slate-400 text-[11px]" x-text="activePrescription.doctor_specialty + ' • ' + activePrescription.hospital"></p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Course Duration & Dates</span>
+                            <p class="text-emerald-400 font-bold text-sm mt-0.5" x-text="activePrescription.course_duration"></p>
+                            <p class="text-slate-400 text-[11px]" x-text="'Issued: ' + activePrescription.issue_date + ' • Valid Through Active Episode'"></p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800">
+                            <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Specialist Clinical Advice</span>
+                            <p class="text-slate-200 text-xs mt-0.5 leading-relaxed" x-text="activePrescription.doctor_advice"></p>
+                        </div>
+                    </div>
+
+                    <!-- Prescribed Medications Slot Table -->
+                    <div class="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden mb-4">
+                        <div class="p-3.5 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                                <span>💊</span> <span>Prescribed Medications in Active Slot (4 Drugs)</span>
+                            </span>
+                            <span class="text-[10px] text-emerald-400 font-mono">Digitally Signed & ABDM Linked</span>
+                        </div>
+                        <div class="divide-y divide-slate-800/80 text-xs">
+                            <template x-for="med in activePrescription.medications" :key="med.name">
+                                <div class="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-800/30 transition">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-white text-sm" x-text="med.name"></span>
+                                            <span class="px-2 py-0.5 bg-indigo-950 text-indigo-300 text-[10px] font-semibold rounded" x-text="med.salt"></span>
+                                        </div>
+                                        <p class="text-slate-400 text-[11px] mt-0.5" x-text="med.form + ' • ' + med.dosage + ' • ' + med.timing + ' • ' + med.duration"></p>
+                                    </div>
+                                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-mono font-bold self-start sm:self-center" x-text="med.schedule"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions on Prescription Slot -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" @click="openPrescriptionDocument()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/30">
+                                <span>👁️</span> <span>View Official Rx Slip</span>
+                            </button>
+                            <button type="button" @click="downloadPrescriptionDocument()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                                <span>📥</span> <span>Download Rx Slip</span>
+                            </button>
+                            <button type="button" @click="sharePrescriptionToWhatsApp()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                                <span>💬</span> <span>Send Rx to Pharmacy / WhatsApp</span>
+                            </button>
+                        </div>
+
+                        <button type="button" @click="openUploadPrescriptionModal()" class="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                            <span>➕</span> <span>Upload New Rx Slip</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- CATEGORY NAVIGATION & SEARCH BAR FOR REPORTS VAULT          -->
+                <!-- ============================================================ -->
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-950/90 rounded-2xl border border-slate-800 shadow-xl">
+                        <!-- Category Filter Chips -->
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <button type="button" @click="vaultSelectedCategory = 'all'"
+                                    :class="vaultSelectedCategory === 'all' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'"
+                                    class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5">
+                                <span>🔘 All Reports</span>
+                                <span class="px-1.5 py-0.2 bg-black/30 rounded text-[10px]" x-text="getCategoryCount('all')"></span>
+                            </button>
+                            <button type="button" @click="vaultSelectedCategory = 'Doctor Prescription'"
+                                    :class="vaultSelectedCategory === 'Doctor Prescription' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-slate-900 text-emerald-400 hover:bg-emerald-950/40 border border-slate-800'"
+                                    class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5">
+                                <span>💊 Doctor Prescriptions (Rx)</span>
+                                <span class="px-1.5 py-0.2 bg-black/30 rounded text-[10px]" x-text="getCategoryCount('Doctor Prescription')"></span>
+                            </button>
+                            <button type="button" @click="vaultSelectedCategory = 'Blood Test'"
+                                    :class="vaultSelectedCategory === 'Blood Test' ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-slate-900 text-rose-400 hover:bg-rose-950/40 border border-slate-800'"
+                                    class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5">
+                                <span>🩸 Blood Tests</span>
+                                <span class="px-1.5 py-0.2 bg-black/30 rounded text-[10px]" x-text="getCategoryCount('Blood Test')"></span>
+                            </button>
+                            <button type="button" @click="vaultSelectedCategory = 'Imaging & Radiology'"
+                                    :class="vaultSelectedCategory === 'Imaging & Radiology' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900 text-indigo-400 hover:bg-indigo-950/40 border border-slate-800'"
+                                    class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5">
+                                <span>🩻 Imaging & Scans</span>
+                                <span class="px-1.5 py-0.2 bg-black/30 rounded text-[10px]" x-text="getCategoryCount('Imaging & Radiology')"></span>
+                            </button>
+                            <button type="button" @click="vaultSelectedCategory = 'Cardiology'"
+                                    :class="vaultSelectedCategory === 'Cardiology' ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30' : 'bg-slate-900 text-cyan-400 hover:bg-cyan-950/40 border border-slate-800'"
+                                    class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5">
+                                <span>❤️ Cardiology / ECG</span>
+                                <span class="px-1.5 py-0.2 bg-black/30 rounded text-[10px]" x-text="getCategoryCount('Cardiology')"></span>
+                            </button>
+                        </div>
+
+                        <!-- Instant Search in Vault -->
+                        <div class="relative min-w-[220px]">
+                            <input type="text" x-model="vaultSearchQuery" placeholder="Search test name or doctor..."
+                                   class="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                            <span class="absolute left-2.5 top-2 text-xs text-slate-500">🔍</span>
+                        </div>
+                    </div>
+
+                    <!-- Filtered Reports List -->
+                    <div class="bg-slate-950/80 rounded-2xl border border-slate-800/80 overflow-hidden shadow-xl">
+                        <div class="p-4 border-b border-slate-800/80 flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                                Clinical Documents & Reports (<span x-text="filteredVaultRecords().length"></span>)
+                            </h4>
+                            <span class="text-[11px] text-slate-500" x-text="'Showing: ' + (vaultSelectedCategory === 'all' ? 'All Medical Categories' : vaultSelectedCategory)"></span>
+                        </div>
+
+                        <div class="divide-y divide-slate-800/60">
+                            <template x-for="rec in filteredVaultRecords()" :key="rec.id">
+                                <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-900/40 transition">
+                                    <div class="flex items-start gap-3.5">
+                                        <!-- File & Category Icon Avatar -->
+                                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-base shadow-inner border"
+                                             :class="{
+                                                 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30': rec.category === 'Doctor Prescription',
+                                                 'bg-rose-950/80 text-rose-300 border-rose-500/30': rec.category === 'Blood Test',
+                                                 'bg-indigo-950/80 text-indigo-300 border-indigo-500/30': rec.category === 'Imaging & Radiology',
+                                                 'bg-cyan-950/80 text-cyan-300 border-cyan-500/30': rec.category === 'Cardiology',
+                                                 'bg-slate-900 text-slate-300 border-slate-800': rec.category !== 'Doctor Prescription' && rec.category !== 'Blood Test' && rec.category !== 'Imaging & Radiology' && rec.category !== 'Cardiology'
+                                             }">
+                                            <template x-if="rec.category === 'Doctor Prescription'"><span>💊</span></template>
+                                            <template x-if="rec.category === 'Blood Test'"><span>🩸</span></template>
+                                            <template x-if="rec.category === 'Imaging & Radiology'"><span>🩻</span></template>
+                                            <template x-if="rec.category === 'Cardiology'"><span>❤️</span></template>
+                                            <template x-if="rec.category !== 'Doctor Prescription' && rec.category !== 'Blood Test' && rec.category !== 'Imaging & Radiology' && rec.category !== 'Cardiology'">
+                                                <span>📑</span>
+                                            </template>
+                                        </div>
+
+                                        <!-- Document Details -->
+                                        <div>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <!-- Category Badge with Distinct Colors -->
+                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1"
+                                                      :class="{
+                                                          'bg-emerald-950 text-emerald-300 border border-emerald-500/40': rec.category === 'Doctor Prescription',
+                                                          'bg-rose-950 text-rose-300 border border-rose-500/40': rec.category === 'Blood Test',
+                                                          'bg-indigo-950 text-indigo-300 border border-indigo-500/40': rec.category === 'Imaging & Radiology',
+                                                          'bg-cyan-950 text-cyan-300 border border-cyan-500/40': rec.category === 'Cardiology',
+                                                          'bg-amber-950 text-amber-300 border border-amber-500/40': rec.category === 'Discharge Summary' || rec.category === 'General Health'
+                                                      }">
+                                                    <template x-if="rec.category === 'Doctor Prescription'"><span>💊 Doctor Prescription</span></template>
+                                                    <template x-if="rec.category === 'Blood Test'"><span>🩸 Blood Test & Lab Panel</span></template>
+                                                    <template x-if="rec.category === 'Imaging & Radiology'"><span>🩻 Imaging & Radiology</span></template>
+                                                    <template x-if="rec.category === 'Cardiology'"><span>❤️ Cardiology / ECG</span></template>
+                                                    <template x-if="rec.category !== 'Doctor Prescription' && rec.category !== 'Blood Test' && rec.category !== 'Imaging & Radiology' && rec.category !== 'Cardiology'">
+                                                        <span x-text="'📋 ' + rec.category"></span>
+                                                    </template>
+                                                </span>
+
+                                                <span class="text-slate-500">•</span>
+                                                <span class="text-slate-400 font-mono text-[11px]" x-text="rec.date"></span>
+                                                <span class="text-slate-500">•</span>
+                                                <span class="text-slate-400 text-[11px]" x-text="rec.size_kb + ' KB'"></span>
+                                            </div>
+
+                                            <h5 class="text-sm font-bold text-white mt-1" x-text="rec.title"></h5>
+                                            <p class="text-xs text-indigo-300 mt-0.5" x-text="'Physician: ' + (rec.doctor_name || 'Dr. K. S. Rao, MD')"></p>
+
+                                            <!-- Clinical Findings / Doctor Note -->
+                                            <div class="mt-2 text-xs bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/60 text-slate-300 leading-relaxed">
+                                                <span class="text-slate-400 font-medium">Specialist Clinical Note:</span> <span x-text="rec.doctor_notes"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right Action Buttons -->
+                                    <div class="flex flex-wrap items-center gap-2 sm:self-center">
+                                        <span class="px-2.5 py-1 text-xs rounded-full font-medium"
+                                              :class="rec.doctor_status === 'Verified' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'"
+                                              x-text="rec.doctor_status">
+                                        </span>
+
+                                        <!-- VIEW REPORT BUTTON -->
+                                        <button type="button" @click="openViewReportModal(rec)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition flex items-center gap-1">
+                                            <span>👁️ View Report</span>
+                                        </button>
+
+                                        <!-- SHARE REPORT BUTTON -->
+                                        <button type="button" @click="openShareReportModal(rec)" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center gap-1">
+                                            <span>🔗 Share</span>
+                                        </button>
+
+                                        <!-- DOWNLOAD BUTTON -->
+                                        <button type="button" @click="downloadReportFile(rec)" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 rounded-xl text-xs font-medium transition flex items-center gap-1">
+                                            <span>📥 Download</span>
+                                        </button>
+
+                                        <template x-if="isDoctorView && rec.doctor_status !== 'Verified'">
+                                            <button type="button" @click="verifyRecordAsDoctor(rec.id)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow">
+                                                ✓ Sign Off
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Empty state if category has no results -->
+                            <template x-if="filteredVaultRecords().length === 0">
+                                <div class="p-8 text-center text-slate-500">
+                                    <span class="text-3xl block mb-2">📁</span>
+                                    <p class="text-sm font-semibold text-slate-400">No reports found matching this category or search.</p>
+                                    <button type="button" @click="vaultSelectedCategory = 'all'; vaultSearchQuery = ''" class="mt-3 px-4 py-1.5 bg-indigo-600/30 text-indigo-300 rounded-xl text-xs font-medium">Reset Filters</button>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
 
@@ -3251,9 +3446,27 @@
                         key_metrics: "TSH: 2.10 uIU/mL (Normal), Free T4: 1.32 ng/dL",
                         notes: "Optimal thyroid physiological homeostasis."
                     }
-                ],
-
-                // Reports Vault
+                ],                // Reports Vault
+                vaultSelectedCategory: 'all',
+                vaultSearchQuery: '',
+                activePrescription: {
+                    rx_id: "RX-2026-APOLLO",
+                    doctor_name: "Dr. K. S. Rao, MD",
+                    doctor_specialty: "Senior Pulmonologist & Critical Care Specialist",
+                    hospital: "Apollo Health City, Jubilee Hills, Hyderabad",
+                    issue_date: "March 09, 2026",
+                    course_duration: "6-Day Targeted Antibiotic Therapy",
+                    status: "Active Medical Course",
+                    slip_file_name: "Rx_Apollo_Pulmonology_Mar09.jpg",
+                    slip_file_url: "./reports/Rx_Apollo_Pulmonology_Mar09.jpg",
+                    doctor_advice: "Take complete 6-day antibiotic course without skipping. Drink plenty of warm fluids and rest. Review if fever recurs beyond 48 hours.",
+                    medications: [
+                        { name: "Augmentin 625 Duo", salt: "Amoxicillin 500mg + Clavulanic Acid 125mg", form: "Tablet", dosage: "1 Tab BID (Morning & Night)", duration: "6 Days", timing: "After Food", schedule: "1 - 0 - 1" },
+                        { name: "Ascoril-LS Syrup", salt: "Levosalbutamol 1mg + Ambroxol 30mg + Guaiphenesin 50mg", form: "Syrup", dosage: "10 ml Three Times Daily", duration: "5 Days", timing: "After Food", schedule: "10ml TID" },
+                        { name: "Montair-LC", salt: "Montelukast 10mg + Levocetirizine 5mg", form: "Tablet", dosage: "1 Tab at Bedtime", duration: "7 Days", timing: "Night Before Sleep", schedule: "0 - 0 - 1" },
+                        { name: "Pan-D", salt: "Pantoprazole 40mg + Domperidone 30mg", form: "Capsule", dosage: "1 Cap OD Empty Stomach", duration: "6 Days", timing: "30 mins Before Breakfast", schedule: "1 - 0 - 0" }
+                    ]
+                },
                 recordsList: [
                     {
                         id: "REC-101",
@@ -3280,6 +3493,45 @@
                         doctor_status: "Verified",
                         doctor_name: "Dr. Ramesh Gupta, MD",
                         doctor_notes: "Peribronchial cuffing resolving. Lungs clear."
+                    },
+                    {
+                        id: "REC-103",
+                        title: "Doctor Prescription Slip - Dr. K. S. Rao (Pulmonology)",
+                        file_name: "Rx_Apollo_Pulmonology_Mar09.jpg",
+                        file_url: "./reports/Rx_Apollo_Pulmonology_Mar09.jpg",
+                        file_type: "image/jpeg",
+                        size_kb: 512,
+                        category: "Doctor Prescription",
+                        date: "2026-03-09",
+                        doctor_status: "Verified",
+                        doctor_name: "Dr. K. S. Rao, MD",
+                        doctor_notes: "Prescribed 6-day course of Augmentin 625 Duo, Ascoril-LS, Montair-LC, and Pan-D."
+                    },
+                    {
+                        id: "REC-104",
+                        title: "12-Lead Electrocardiogram (ECG) Report",
+                        file_name: "ECG_Report_Normal_Sinus.pdf",
+                        file_url: "./reports/ECG_Report_Normal_Sinus.pdf",
+                        file_type: "application/pdf",
+                        size_kb: 256,
+                        category: "Cardiology",
+                        date: "2026-03-08",
+                        doctor_status: "Verified",
+                        doctor_name: "Dr. Ramesh Gupta, MD (Cardiology)",
+                        doctor_notes: "Normal Sinus Rhythm, 72 bpm. Zero ischemic changes or ST elevation."
+                    },
+                    {
+                        id: "REC-105",
+                        title: "Comprehensive Lipid Profile Panel",
+                        file_name: "Lipid_Profile_March2026.pdf",
+                        file_url: "./reports/Lipid_Profile_March2026.pdf",
+                        file_type: "application/pdf",
+                        size_kb: 242,
+                        category: "Blood Test",
+                        date: "2026-03-10",
+                        doctor_status: "Verified",
+                        doctor_name: "Dr. K. S. Rao, MD",
+                        doctor_notes: "Total Cholesterol: 178 mg/dL (Desirable), Triglycerides: 135 mg/dL. Normal."
                     }
                 ],
                 uploadTitle: '',
