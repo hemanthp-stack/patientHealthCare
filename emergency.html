@@ -728,21 +728,30 @@
                     }
 
                     // 2. Read explicit URL query parameters (which take precedence)
-                    if (params.get('id')) this.user.health_id = params.get('id');
-                    if (params.get('name')) this.user.name = params.get('name');
-                    if (params.get('blood')) this.user.blood_group = params.get('blood');
-                    if (params.get('phone')) this.user.phone = params.get('phone');
-                    if (params.get('dob')) this.user.dob = params.get('dob');
-                    if (params.get('age')) this.user.age = parseInt(params.get('age')) || this.user.age;
-                    if (params.get('gender')) this.user.gender = params.get('gender');
-                    if (params.get('em')) this.user.emergency_contact = params.get('em');
-                    if (params.get('hosp')) this.user.hospital = params.get('hosp');
-                    if (params.get('addr')) this.user.address = params.get('addr');
-                    if (params.get('all')) this.user.allergies = params.get('all').split(',').map(s => s.trim()).filter(Boolean);
-                    if (params.get('temp')) this.vitals.temperature = params.get('temp');
-                    if (params.get('bp')) this.vitals.blood_pressure = params.get('bp');
-                    if (params.get('pulse')) this.vitals.pulse = params.get('pulse');
-                    if (params.get('spo2')) this.vitals.spo2 = params.get('spo2');
+                    const cleanParam = (k) => {
+                        const val = params.get(k);
+                        if (!val) return null;
+                        if (k === 'blood' || k === 'phone' || k === 'em') return val.trim();
+                        return val.replace(/\+/g, ' ').trim();
+                    };
+
+                    if (cleanParam('id')) this.user.health_id = cleanParam('id');
+                    if (cleanParam('name')) this.user.name = cleanParam('name');
+                    if (cleanParam('blood')) this.user.blood_group = cleanParam('blood');
+                    if (cleanParam('phone')) this.user.phone = cleanParam('phone');
+                    if (cleanParam('dob')) this.user.dob = cleanParam('dob');
+                    if (cleanParam('age')) this.user.age = parseInt(cleanParam('age')) || this.user.age;
+                    if (cleanParam('gender')) this.user.gender = cleanParam('gender');
+                    if (cleanParam('em')) this.user.emergency_contact = cleanParam('em');
+                    if (cleanParam('hosp')) this.user.hospital = cleanParam('hosp');
+                    if (cleanParam('addr')) this.user.address = cleanParam('addr');
+                    if (cleanParam('doc')) this.user.primary_physician = cleanParam('doc');
+                    if (cleanParam('donor')) this.user.organ_donor = cleanParam('donor');
+                    if (cleanParam('all')) this.user.allergies = cleanParam('all').split(',').map(s => s.trim()).filter(Boolean);
+                    if (cleanParam('temp')) this.vitals.temperature = cleanParam('temp');
+                    if (cleanParam('bp')) this.vitals.blood_pressure = cleanParam('bp');
+                    if (cleanParam('pulse')) this.vitals.pulse = cleanParam('pulse');
+                    if (cleanParam('spo2')) this.vitals.spo2 = cleanParam('spo2');
 
                     // 3. Fallback to localStorage if accessed on same device without parameters
                     try {

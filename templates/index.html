@@ -811,7 +811,7 @@
         var modCount = qr.getModuleCount();
         var width = this.options.width || 256;
         var height = this.options.height || 256;
-        var margin = 2;
+        var margin = 3;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
@@ -837,7 +837,7 @@
         qr.addData(text);
         qr.make();
         var modCount = qr.getModuleCount();
-        var margin = 2;
+        var margin = 3;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
@@ -852,13 +852,25 @@
     };
 
     // Expose globally
-    var root = (typeof window !== "undefined") ? window : (typeof global !== "undefined" ? global : this);
+    var root = (typeof window !== "undefined") ? window : (typeof global !== "undefined" ? global : (typeof globalThis !== "undefined" ? globalThis : this));
     root.QRCode = AuraQR;
     root.AuraQR = AuraQR;
+    if (typeof window !== "undefined") {
+        window.QRCode = AuraQR;
+        window.AuraQR = AuraQR;
+    }
+    if (typeof globalThis !== "undefined") {
+        globalThis.QRCode = AuraQR;
+        globalThis.AuraQR = AuraQR;
+    }
     if (typeof module !== "undefined" && module.exports) {
         module.exports = { QRCodeModel, AuraQR, QRUtil, QRMath, QRErrorCorrectLevel };
     }
 })();
+
+// Explicit top-level global declarations to guarantee bare identifier resolution in any scope
+var QRCode = (typeof window !== "undefined" && window.QRCode) ? window.QRCode : ((typeof globalThis !== "undefined" && globalThis.QRCode) ? globalThis.QRCode : null);
+var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : ((typeof globalThis !== "undefined" && globalThis.AuraQR) ? globalThis.AuraQR : null);
 </script>
 
     <!-- Google Fonts -->
@@ -1201,8 +1213,8 @@
                                     <span>DEMO SPECIMEN • READY TO ACTIVATE</span>
                                 </div>
                             </div>
-                            <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0" @click="openEnlargeQrModal()">
-                                <div id="heroCardQr" class="w-10 sm:w-11 h-10 sm:h-11 flex items-center justify-center"></div>
+                            <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
+                                <div id="heroCardQr" class="w-12 sm:w-14 h-12 sm:h-14 flex items-center justify-center"></div>
                             </div>
                         </div>
 
@@ -3179,8 +3191,8 @@
                                     </div>
                                 </div>
 
-                                <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0">
-                                    <div id="mintedCardQr" class="w-11 sm:w-13 h-11 sm:h-13 flex items-center justify-center"></div>
+                                <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
+                                    <div id="mintedCardQr" class="w-12 sm:w-14 h-12 sm:h-14 flex items-center justify-center"></div>
                                 </div>
                             </div>
 
@@ -4100,17 +4112,28 @@
                     const heroContainer = document.getElementById('heroCardQr');
                     if (heroContainer) {
                         heroContainer.innerHTML = '';
+                        const payload = this.getEmergencyWebUrl();
+                        const QRClass = (typeof window !== 'undefined' && window.QRCode) ? window.QRCode : (typeof QRCode !== 'undefined' ? QRCode : (typeof AuraQR !== 'undefined' ? AuraQR : null));
                         try {
-                            new QRCode(heroContainer, {
-                                text: this.getEmergencyWebUrl(),
-                                width: 48,
-                                height: 48,
-                                colorDark: "#000000",
-                                colorLight: "#ffffff",
-                                correctLevel: 1
-                            });
+                            if (QRClass) {
+                                new QRClass(heroContainer, {
+                                    text: payload,
+                                    width: 56,
+                                    height: 56,
+                                    colorDark: "#000000",
+                                    colorLight: "#ffffff",
+                                    correctLevel: 1
+                                });
+                            } else {
+                                throw new Error("QR Library not found");
+                            }
                         } catch (e) {
-                            heroContainer.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
+                            const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
+                            if (SvgGen && SvgGen.generateSVG) {
+                                heroContainer.innerHTML = SvgGen.generateSVG(payload, 56, 1);
+                            } else {
+                                heroContainer.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
+                            }
                         }
                     }
                 },
@@ -4417,10 +4440,13 @@
                     }
                 },
 
-                // API Fetch Helper
+                // API Fetch Helper with timeout to prevent blocking on static deployment
                 async apiFetch(url, options = {}) {
                     try {
-                        const res = await fetch(url, options);
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 1200);
+                        const res = await fetch(url, { ...options, signal: controller.signal });
+                        clearTimeout(timeoutId);
                         if (!res.ok) return null;
                         return await res.json();
                     } catch (e) {
@@ -4437,23 +4463,36 @@
                             if (parsed && parsed.name) {
                                 this.currentUser = { ...this.currentUser, ...parsed };
                                 this.hasExistingProfile = true;
-                                // Keep landing page generic demo until user signs in!
                             }
                         }
                     } catch (e) {}
 
-                    const rxRes = await this.apiFetch('/api/prescription/sample');
-                    if (rxRes) this.prescriptionData = rxRes;
-                    else this.loadSamplePrescription();
+                    // RENDER QR CODES IMMEDIATELY ON STARTUP (Zero wait, 100% instant display)
+                    this.renderHeroCardQR();
+                    this.generateCardQR();
+                    this.$nextTick(() => {
+                        this.renderHeroCardQR();
+                        this.generateCardQR();
+                    });
+
+                    // Background sample load with fast fallback
+                    try {
+                        const rxRes = await this.apiFetch('/api/prescription/sample');
+                        if (rxRes) this.prescriptionData = rxRes;
+                        else this.loadSamplePrescription();
+                    } catch (e) {
+                        this.loadSamplePrescription();
+                    }
 
                     this.initChatWelcome();
                     this.initSimulatedCameraCanvas();
                     this.filteredHospitals = [...this.masterHospitalsList];
 
-                    this.$nextTick(() => {
-                        this.generateCardQR();
+                    // Final verification pass after DOM settled
+                    setTimeout(() => {
                         this.renderHeroCardQR();
-                    });
+                        this.generateCardQR();
+                    }, 120);
                 },
 
                 switchTab(tabName) {
@@ -4519,17 +4558,28 @@
                         const mintedContainer = document.getElementById('mintedCardQr');
                         if (mintedContainer) {
                             mintedContainer.innerHTML = '';
+                            const payload = this.getEmergencyWebUrl();
+                            const QRClass = (typeof window !== 'undefined' && window.QRCode) ? window.QRCode : (typeof QRCode !== 'undefined' ? QRCode : (typeof AuraQR !== 'undefined' ? AuraQR : null));
                             try {
-                                new QRCode(mintedContainer, {
-                                    text: this.getEmergencyWebUrl(),
-                                    width: 52,
-                                    height: 52,
-                                    colorDark: "#000000",
-                                    colorLight: "#ffffff",
-                                    correctLevel: 1
-                                });
+                                if (QRClass) {
+                                    new QRClass(mintedContainer, {
+                                        text: payload,
+                                        width: 56,
+                                        height: 56,
+                                        colorDark: "#000000",
+                                        colorLight: "#ffffff",
+                                        correctLevel: 1
+                                    });
+                                } else {
+                                    throw new Error("QR Library not found");
+                                }
                             } catch(e) {
-                                mintedContainer.innerHTML = '<span class="text-[9px] text-slate-900 font-bold">QR</span>';
+                                const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
+                                if (SvgGen && SvgGen.generateSVG) {
+                                    mintedContainer.innerHTML = SvgGen.generateSVG(payload, 56, 1);
+                                } else {
+                                    mintedContainer.innerHTML = '<span class="text-[9px] text-slate-900 font-bold">QR</span>';
+                                }
                             }
                         }
                     });
@@ -4866,48 +4916,26 @@
                     const v = this.liveVitals || {};
 
                     const q = new URLSearchParams();
-                    q.set('id', u.health_id || 'AH-2026-ACTIVE-IN');
-                    q.set('name', u.name || 'Verified Patient');
-                    q.set('blood', u.blood_group || 'O+ (Positive)');
-                    if (u.phone) q.set('phone', u.phone);
+                    q.set('id', u.health_id || 'AH-2026-8849-IN');
+                    q.set('name', u.name || 'Hemanth Kumar');
+                    const blood = (u.blood_group || 'O+').replace(/\s*\(.*?\)/, '').trim();
+                    q.set('blood', blood || 'O+');
+                    if (u.phone) q.set('phone', u.phone.replace(/\s+/g, ''));
                     if (u.dob) q.set('dob', u.dob);
                     if (u.age) q.set('age', u.age);
                     if (u.gender) q.set('gender', u.gender);
-                    if (u.emergency_contact) q.set('em', u.emergency_contact);
-                    if (u.hospital) q.set('hosp', u.hospital);
-                    if (u.address) q.set('addr', u.address);
+                    if (u.emergency_contact) q.set('em', u.emergency_contact.replace(/\s*\(.*?\)/, '').replace(/\s+/g, ''));
+                    if (u.hospital) q.set('hosp', u.hospital.split(',')[0].trim());
+                    if (u.primary_physician) q.set('doc', u.primary_physician.split(',')[0].trim());
+                    if (u.address) q.set('addr', u.address.split(',').slice(-2).join(',').trim() || u.address);
                     if (u.allergies) {
-                        q.set('all', Array.isArray(u.allergies) ? u.allergies.join(', ') : u.allergies);
+                        const allStr = Array.isArray(u.allergies) ? u.allergies.join(',') : u.allergies;
+                        if (allStr) q.set('all', allStr);
                     }
-                    if (v && v.temperature) q.set('temp', v.temperature);
-                    if (v && v.blood_pressure) q.set('bp', v.blood_pressure);
-                    if (v && v.pulse) q.set('pulse', v.pulse);
-                    if (v && v.spo2) q.set('spo2', v.spo2);
-
-                    // Add base64 payload for complete clinical fidelity
-                    try {
-                        const payloadObj = {
-                            name: u.name,
-                            health_id: u.health_id,
-                            blood: u.blood_group,
-                            phone: u.phone,
-                            email: u.email,
-                            dob: u.dob,
-                            age: u.age,
-                            gender: u.gender,
-                            em: u.emergency_contact,
-                            addr: u.address,
-                            hosp: u.hospital,
-                            doc: u.primary_physician,
-                            all: Array.isArray(u.allergies) ? u.allergies : [u.allergies],
-                            temp: v.temperature,
-                            bp: v.blood_pressure,
-                            pulse: v.pulse,
-                            spo2: v.spo2
-                        };
-                        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj))));
-                        q.set('d', b64);
-                    } catch(err) {}
+                    if (v && v.temperature) q.set('temp', v.temperature.replace(/\s*°?F/i, '°F'));
+                    if (v && v.blood_pressure) q.set('bp', v.blood_pressure.replace(/\s*mmHg/i, ''));
+                    if (v && v.pulse) q.set('pulse', v.pulse.replace(/\s*bpm/i, ''));
+                    if (v && v.spo2) q.set('spo2', v.spo2.replace(/\s*%/i, '%'));
 
                     return `${base}?${q.toString()}`;
                 },
@@ -4976,24 +5004,30 @@
                         corrLevel = (typeof QRCode !== 'undefined' && QRCode.CorrectLevel) ? QRCode.CorrectLevel.L : 1;
                     } else if (this.qrDisplayMode === 'web') {
                         payload = this.getEmergencyWebUrl();
-                        corrLevel = (typeof QRCode !== 'undefined' && QRCode.CorrectLevel) ? QRCode.CorrectLevel.M : 0;
+                        corrLevel = (typeof QRCode !== 'undefined' && QRCode.CorrectLevel) ? QRCode.CorrectLevel.L : 1;
                     }
                     
                     this.currentQrPayload = payload;
                     
+                    const QRClass = (typeof window !== 'undefined' && window.QRCode) ? window.QRCode : (typeof QRCode !== 'undefined' ? QRCode : (typeof AuraQR !== 'undefined' ? AuraQR : null));
                     try {
-                        new QRCode(bigContainer, {
-                            text: payload,
-                            width: 256,
-                            height: 256,
-                            colorDark: "#000000",
-                            colorLight: "#ffffff",
-                            correctLevel: corrLevel
-                        });
+                        if (QRClass) {
+                            new QRClass(bigContainer, {
+                                text: payload,
+                                width: 256,
+                                height: 256,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff",
+                                correctLevel: corrLevel
+                            });
+                        } else {
+                            throw new Error("QR Library not found");
+                        }
                     } catch (e) {
                         console.error("QR Code Generation Error:", e);
-                        if (typeof AuraQR !== 'undefined') {
-                            bigContainer.innerHTML = AuraQR.generateSVG(payload, 256, corrLevel);
+                        const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
+                        if (SvgGen && SvgGen.generateSVG) {
+                            bigContainer.innerHTML = SvgGen.generateSVG(payload, 256, corrLevel);
                         }
                     }
                 },
@@ -5008,18 +5042,24 @@
                     container.innerHTML = '';
                     
                     const payload = this.getEmergencyWebUrl();
+                    const QRClass = (typeof window !== 'undefined' && window.QRCode) ? window.QRCode : (typeof QRCode !== 'undefined' ? QRCode : (typeof AuraQR !== 'undefined' ? AuraQR : null));
                     try {
-                        new QRCode(container, {
-                            text: payload,
-                            width: 96,
-                            height: 96,
-                            colorDark: "#000000",
-                            colorLight: "#ffffff",
-                            correctLevel: (typeof QRCode !== 'undefined' && QRCode.CorrectLevel) ? QRCode.CorrectLevel.L : 1
-                        });
+                        if (QRClass) {
+                            new QRClass(container, {
+                                text: payload,
+                                width: 96,
+                                height: 96,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff",
+                                correctLevel: (QRClass.CorrectLevel) ? QRClass.CorrectLevel.L : 1
+                            });
+                        } else {
+                            throw new Error("QR Library not found");
+                        }
                     } catch (e) {
-                        if (typeof AuraQR !== 'undefined') {
-                            container.innerHTML = AuraQR.generateSVG(payload, 96, 1);
+                        const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
+                        if (SvgGen && SvgGen.generateSVG) {
+                            container.innerHTML = SvgGen.generateSVG(payload, 96, 1);
                         } else {
                             container.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
                         }
@@ -5062,6 +5102,9 @@
                     this.$nextTick(() => {
                         this.renderEnlargedQr();
                     });
+                    setTimeout(() => {
+                        this.renderEnlargedQr();
+                    }, 60);
                 },
 
                 openEmergencyModal() {
