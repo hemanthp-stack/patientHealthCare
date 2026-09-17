@@ -1073,6 +1073,21 @@ class VerifyOTPRequest(BaseModel):
     otp: str
     name: Optional[str] = None
 
+
+class RegisterRequest(BaseModel):
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    dob: Optional[str] = None
+    gender: Optional[str] = None
+    blood_group: Optional[str] = None
+    emergency_contact: Optional[str] = None
+    hospital: Optional[str] = None
+    allergies: Optional[List[str]] = None
+    chronic_conditions: Optional[List[str]] = None
+    address: Optional[str] = None
+    password: Optional[str] = None
+
 class GoogleLoginRequest(BaseModel):
     email: str
     name: str
@@ -1249,6 +1264,52 @@ async def verify_otp(payload: VerifyOTPRequest):
         "user": session_user
     }
 
+
+
+@app.post("/api/auth/register")
+async def register_user(payload: RegisterRequest):
+    safe_name = payload.name.strip()
+    if not safe_name:
+        raise HTTPException(status_code=400, detail="Full Name is required for registration.")
+    
+    session_user = dict(DEFAULT_USER)
+    session_user["name"] = safe_name
+    session_user["health_id"] = generate_unique_health_id(safe_name)
+    if payload.email:
+        session_user["email"] = payload.email.strip()
+    if payload.phone:
+        session_user["phone"] = payload.phone.strip()
+    if payload.dob:
+        session_user["dob"] = payload.dob
+    if payload.gender:
+        session_user["gender"] = payload.gender
+    if payload.blood_group:
+        session_user["blood_group"] = payload.blood_group
+    if payload.emergency_contact:
+        session_user["emergency_contact"] = payload.emergency_contact
+    if payload.hospital:
+        session_user["hospital"] = payload.hospital
+    if payload.allergies:
+        session_user["allergies"] = payload.allergies
+    if payload.chronic_conditions:
+        session_user["chronic_conditions"] = payload.chronic_conditions
+    if payload.address:
+        session_user["address"] = payload.address
+
+    DEFAULT_USER.update(session_user)
+    token = str(uuid.uuid4())
+    ACTIVE_SESSIONS[token] = session_user
+
+    return {
+        "status": "success",
+        "message": f"Profile registered successfully for {safe_name}! Generated Health ID: {session_user['health_id']}",
+        "token": token,
+        "user": session_user
+    }
+
+@app.post("/api/auth/google")
+async def google_login_alias(payload: GoogleLoginRequest):
+    return await google_login(payload)
 
 @app.post("/api/auth/google-login")
 async def google_login(payload: GoogleLoginRequest):
