@@ -15,9 +15,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+IS_VERCEL = bool(os.environ.get("VERCEL"))
 BASE_DIR = Path(__file__).resolve().parent
-UPLOAD_DIR = BASE_DIR / "uploads"
-UPLOAD_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR = Path("/tmp/uploads") if IS_VERCEL else (BASE_DIR / "uploads")
+try:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 app = FastAPI(
     title="Pulse Shield — Patient Intelligence & 3D Health ID",
@@ -36,12 +40,23 @@ app.add_middleware(
 
 # Static and Templates
 REPORTS_DIR = BASE_DIR / "reports"
-REPORTS_DIR.mkdir(exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
-app.mount("/reports", StaticFiles(directory=str(REPORTS_DIR)), name="reports")
+try:
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+
 ASSETS_DIR = BASE_DIR / "assets"
-ASSETS_DIR.mkdir(exist_ok=True)
-app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
+try:
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+
+if UPLOAD_DIR.exists():
+    app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+if REPORTS_DIR.exists():
+    app.mount("/reports", StaticFiles(directory=str(REPORTS_DIR)), name="reports")
+if ASSETS_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 @app.api_route("/pulse_shield_logo.png", methods=["GET", "HEAD"])
 async def get_pulse_shield_logo():
