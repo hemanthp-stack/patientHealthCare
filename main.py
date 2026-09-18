@@ -1205,13 +1205,6 @@ async def serve_emergency_page(request: Request, health_id: str):
 
 @app.get("/api/tunnel-status")
 async def get_tunnel_status():
-    state_file = os.path.join(os.path.dirname(__file__), "tunnel_state.json")
-    if os.path.exists(state_file):
-        try:
-            with open(state_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
     lan_ip = get_lan_ip()
     return {
         "active": False,

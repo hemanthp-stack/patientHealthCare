@@ -2863,50 +2863,32 @@
                 </div>
             </div>
 
-            <!-- Web URL Host Selector (Shown in 'web' mode) -->
+                        <!-- Web URL Host Selector (Shown in 'web' mode) -->
             <div x-show="qrDisplayMode === 'web'" class="w-full mt-2.5 bg-slate-900/95 border border-emerald-500/30 p-3 rounded-2xl text-left text-xs space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="font-bold text-white text-[11px]">🔗 Scannable Web Pass Destination:</span>
-                    <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30">● LIVE ON 5G</span>
+                    <span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30">● 100% PERMANENT CLOUD PASS</span>
                 </div>
                 <div class="flex flex-wrap gap-1.5">
                     <button type="button" @click="customHostUrl = ''; renderEnlargedQr()"
                             :class="!customHostUrl ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
                             class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
-                        <span>🚀</span> <span>Live Web Pass (Auto-Detect)</span>
+                        <span>🚀</span> <span>Official Cloud Pass (Global 5G/4G/Wi-Fi)</span>
                     </button>
-                    <button type="button" @click="customHostUrl = (liveTunnelUrl || 'https://6d9ac3e81ae4a8.lhr.life'); renderEnlargedQr()"
-                            :class="customHostUrl.includes('lhr.life') ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
+                    <button type="button" @click="customHostUrl = (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' ? window.location.origin : ''); renderEnlargedQr()"
+                            :class="customHostUrl && !customHostUrl.includes('localhost') ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
                             class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
-                        <span>🌐</span> <span>Public 5G Tunnel</span>
-                    </button>
-                    <button type="button" @click="customHostUrl = (localWifiUrl || 'http://10.212.70.57:8000'); renderEnlargedQr()"
-                            :class="customHostUrl.includes('10.212.70.57') || customHostUrl.includes('8000') ? 'bg-emerald-600 text-white border-emerald-500 shadow' : 'bg-slate-950 text-slate-300 border-slate-800'"
-                            class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition flex items-center gap-1.5">
-                        <span>📶</span> <span>Local Wi-Fi (LAN)</span>
-                    </button>
-                    <button type="button" @click="fetchTunnelStatus()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-medium transition flex items-center gap-1">
-                        <span>🔄</span> <span>Sync</span>
+                        <span>🌐</span> <span>Current Hosted Domain</span>
                     </button>
                 </div>
                 <div class="flex gap-2 pt-1">
-                    <input type="text" x-model="customHostUrl" @input="renderEnlargedQr()" placeholder="https://..."
+                    <input type="text" x-model="customHostUrl" @input="renderEnlargedQr()" placeholder="https://... (Optional custom domain)"
                            class="flex-1 px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-white font-mono text-xs focus:outline-none focus:border-indigo-500">
-                    <button type="button" @click="renderEnlargedQr()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold">
-                        Refresh QR
+                    <button type="button" @click="customHostUrl = ''; renderEnlargedQr()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold transition">
+                        Reset to Cloud Pass
                     </button>
                 </div>
                 <span class="text-[10px] text-slate-400 block truncate">Scannable Link: <span class="text-emerald-300 font-mono font-bold" x-text="getEmergencyWebUrl()"></span></span>
-            </div>
-
-            <!-- Crisp Vector QR Display -->
-            <div class="my-3 p-4 sm:p-5 bg-white rounded-2xl shadow-2xl border-4 border-emerald-400 crisp-qr relative group">
-                <div id="enlargedQrContainer" class="w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center"></div>
-                <div class="mt-2 text-center">
-                    <span class="text-[11px] font-mono text-slate-800 font-extrabold tracking-wider uppercase">
-                        📷 POINT ANY SMARTPHONE CAMERA HERE TO SCAN
-                    </span>
-                </div>
             </div>
 
             <!-- Quick Action Toolbar -->
@@ -3611,10 +3593,10 @@
                 showScannedDataText: false,
                 qrCopied: false,
                 currentQrPayload: '',
-                liveTunnelUrl: 'https://6d9ac3e81ae4a8.lhr.life',
+                liveTunnelUrl: '',
                 localWifiUrl: 'http://10.212.70.57:8000',
                 customHostUrl: '',
-                tunnelActive: true,
+                tunnelActive: false,
                 qrDisplayMode: 'web', // Default to Live Web Pass so scanning opens saved reports & minor data!,
                 showManualReportModal: false,
                 showManualRxModal: false,
@@ -4126,34 +4108,15 @@
                     fetch('/api/tunnel-status')
                         .then(r => r.json())
                         .then(data => {
-                            if (data && data.url) {
-                                this.liveTunnelUrl = data.url;
-                                if (!this.customHostUrl || this.customHostUrl.includes('883abccf') || this.customHostUrl.includes('lhr.life')) {
-                                    this.customHostUrl = data.url;
-                                }
-                                this.tunnelActive = true;
-                            }
                             if (data && data.local_url) {
                                 this.localWifiUrl = data.local_url;
                             }
-                            this.renderEnlargedQr();
-                            this.generateCardQR();
-                    this.renderHeroCardQR();
                         })
                         .catch(() => {});
                 },
 
                 getEmergencyWebUrl() {
-                    if (this.customHostUrl && this.customHostUrl.trim()) {
-                        let base = this.customHostUrl.trim().replace(/\/$/, '');
-                        if (!base.startsWith('http://') && !base.startsWith('https://')) {
-                            base = 'https://' + base;
-                        }
-                        if (base.includes('emergency.html')) {
-                            return `${base}?id=${this.currentUser.health_id}`;
-                        }
-                        return `${base}/emergency/${this.currentUser.health_id}`;
-                    }
+                    let base = "https://hemanthp-stack.github.io/patientHealthCare/emergency.html";
                     if (window.location.hostname.includes('github.io')) {
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
                         return `${window.location.origin}${path}/emergency.html?id=${this.currentUser.health_id}`;
