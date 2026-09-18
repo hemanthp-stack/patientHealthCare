@@ -729,9 +729,15 @@
 
                     // 2. Read explicit URL query parameters (which take precedence)
                     const cleanParam = (k) => {
-                        const val = params.get(k);
+                        let val = params.get(k);
                         if (!val) return null;
-                        if (k === 'blood' || k === 'phone' || k === 'em') return val.trim();
+                        if (k === 'blood') {
+                            val = val.trim();
+                            if (val.length === 1 && ['A', 'B', 'O'].includes(val)) val += '+';
+                            if (val === 'AB') val = 'AB+';
+                            return val;
+                        }
+                        if (k === 'phone' || k === 'em') return val.trim();
                         return val.replace(/\+/g, ' ').trim();
                     };
 
@@ -784,13 +790,13 @@
                         }
                         if (report.file_url.startsWith('./') || report.file_url.startsWith('/')) {
                             const origin = window.location.origin;
-                            const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                            const pathPrefix = window.location.pathname.includes('/patientHealthCare') ? '/patientHealthCare' : (window.location.pathname.includes('/healthtech') ? '/healthtech' : '');
                             const cleanPath = report.file_url.replace(/^(\.\/|\/)/, '');
                             return `${origin}${pathPrefix}/${cleanPath}`;
                         }
                     }
                     const origin = window.location.origin;
-                    const pathPrefix = window.location.pathname.includes('/healthtech') ? '/healthtech' : '';
+                    const pathPrefix = window.location.pathname.includes('/patientHealthCare') ? '/patientHealthCare' : (window.location.pathname.includes('/healthtech') ? '/healthtech' : '');
                     const fileName = report.file_name || 'CBC_Lab_Report_March2026.pdf';
                     return `${origin}${pathPrefix}/reports/${fileName}`;
                 },

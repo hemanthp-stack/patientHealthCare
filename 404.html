@@ -16,8 +16,12 @@
             if (pathname.includes('emergency')) {
                 // Extract health ID from URL path if passed like /emergency/AH-2026-8849-IN
                 var match = pathname.match(/emergency\/([A-Za-z0-9\-_]+)/);
-                var id = match ? match[1] : (new URLSearchParams(search).get('id') || 'AH-2026-8849-IN');
-                window.location.replace(origin + repoBase + '/emergency.html?id=' + encodeURIComponent(id));
+                var params = new URLSearchParams(search);
+                if (match && match[1] && !match[1].endsWith('.html') && !params.get('id')) {
+                    params.set('id', match[1]);
+                }
+                var queryStr = params.toString() ? '?' + params.toString() : '';
+                window.location.replace(origin + repoBase + '/emergency.html' + queryStr);
             } else {
                 window.location.replace(origin + repoBase + '/index.html' + search);
             }

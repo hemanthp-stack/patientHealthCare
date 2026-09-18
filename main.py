@@ -1177,6 +1177,8 @@ class SelectHospitalRequest(BaseModel):
 # ==========================================
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+@app.get("/index", response_class=HTMLResponse)
 async def serve_portal(request: Request):
     for candidate in [BASE_DIR / "index.html", BASE_DIR / "templates" / "index.html", BASE_DIR.parent / "index.html"]:
         if candidate.exists():
@@ -1189,9 +1191,12 @@ async def serve_portal(request: Request):
     return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield Portal</h1></body></html>")
 
 
-# --- Dedicated Standalone Public Emergency Page (For Phone QR Scanners) ---
-@app.get("/emergency/{health_id}", response_class=HTMLResponse)
-async def serve_emergency_page(request: Request, health_id: str):
+# --- Dedicated Standalone Public Emergency Page (For Phone QR Scanners & Web Viewers) ---
+@app.get("/emergency.html", response_class=HTMLResponse)
+@app.get("/emergency", response_class=HTMLResponse)
+@app.get("/emergency/", response_class=HTMLResponse)
+@app.get("/emergency/{health_id:path}", response_class=HTMLResponse)
+async def serve_emergency_page(request: Request, health_id: Optional[str] = None):
     for candidate in [BASE_DIR / "emergency.html", BASE_DIR / "templates" / "emergency.html", BASE_DIR.parent / "emergency.html"]:
         if candidate.exists():
             return HTMLResponse(candidate.read_text(encoding="utf-8"))
@@ -1201,6 +1206,14 @@ async def serve_emergency_page(request: Request, health_id: str):
         except Exception:
             pass
     return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield Emergency Dossier</h1></body></html>")
+
+
+@app.get("/404.html", response_class=HTMLResponse)
+async def serve_404_page(request: Request):
+    for candidate in [BASE_DIR / "404.html", BASE_DIR / "templates" / "404.html", BASE_DIR.parent / "404.html"]:
+        if candidate.exists():
+            return HTMLResponse(candidate.read_text(encoding="utf-8"))
+    return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield — Not Found</h1></body></html>", status_code=404)
 
 
 @app.get("/api/tunnel-status")
@@ -1378,8 +1391,10 @@ async def get_daily_quote():
     return {"quote": DAILY_HEALTH_QUOTES[idx], "all_quotes": DAILY_HEALTH_QUOTES}
 
 
-@app.get("/api/public/emergency-report/{health_id}")
-async def get_emergency_report(health_id: str):
+@app.get("/api/public/emergency-report")
+@app.get("/api/public/emergency-report/")
+@app.get("/api/public/emergency-report/{health_id:path}")
+async def get_emergency_report(health_id: Optional[str] = None):
     return {
         "status": "active",
         "verified_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S IST"),
@@ -1843,3 +1858,48 @@ async def medical_chat(payload: ChatRequest):
         "language_display": trans["lang_name"],
         "reply": answer
     }
+
+
+# ==========================================
+# Global Custom 404 Fallback Handler
+# (Prevents raw JSON {"detail":"Not Found"} on browser / scan navigation)
+# ==========================================
+
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc):
+    # If a static file exists in BASE_DIR, serve it directly
+    rel_path = request.url.path.lstrip("/")
+    direct_file = BASE_DIR / rel_path
+    if direct_file.is_file():
+        mime = "application/octet-stream"
+        if rel_path.endswith(".html"): mime = "text/html"
+        elif rel_path.endswith(".png"): mime = "image/png"
+        elif rel_path.endswith(".jpg") or rel_path.endswith(".jpeg"): mime = "image/jpeg"
+        elif rel_path.endswith(".pdf"): mime = "application/pdf"
+        elif rel_path.endswith(".json"): mime = "application/json"
+        elif rel_path.endswith(".js"): mime = "application/javascript"
+        elif rel_path.endswith(".css"): mime = "text/css"
+        return FileResponse(direct_file, media_type=mime)
+
+    # API endpoints return structured JSON
+    if request.url.path.startswith("/api/"):
+        return JSONResponse({"status": "error", "detail": "Endpoint not found", "path": request.url.path}, status_code=404)
+
+    # If the requested path is emergency-related, serve emergency dossier
+    if "emergency" in request.url.path.lower():
+        for candidate in [BASE_DIR / "emergency.html", BASE_DIR / "templates" / "emergency.html", BASE_DIR.parent / "emergency.html"]:
+            if candidate.exists():
+                return HTMLResponse(candidate.read_text(encoding="utf-8"))
+
+    # For all other paths, gracefully serve portal index.html
+    for candidate in [BASE_DIR / "index.html", BASE_DIR / "templates" / "index.html", BASE_DIR.parent / "index.html"]:
+        if candidate.exists():
+            return HTMLResponse(candidate.read_text(encoding="utf-8"))
+
+    return HTMLResponse("<!DOCTYPE html><html><body><h1>Pulse Shield</h1></body></html>")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
