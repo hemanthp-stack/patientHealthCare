@@ -78,11 +78,7 @@
             this.parsedData.push(byteArray);
         }
         this.parsedData = Array.prototype.concat.apply([], this.parsedData);
-        if (this.parsedData.length != this.data.length) {
-            this.parsedData.unshift(191);
-            this.parsedData.unshift(187);
-            this.parsedData.unshift(239);
-        }
+
     }
     QR8BitByte.prototype = {
         getLength: function(buffer) {
@@ -811,7 +807,7 @@
         var modCount = qr.getModuleCount();
         var width = this.options.width || 256;
         var height = this.options.height || 256;
-        var margin = 3;
+        var margin = 4;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
@@ -837,7 +833,7 @@
         qr.addData(text);
         qr.make();
         var modCount = qr.getModuleCount();
-        var margin = 3;
+        var margin = 4;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
@@ -1213,8 +1209,11 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                                     <span>DEMO SPECIMEN • READY TO ACTIVATE</span>
                                 </div>
                             </div>
-                            <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
-                                <div id="heroCardQr" class="w-12 sm:w-14 h-12 sm:h-14 flex items-center justify-center"></div>
+                            <div class="flex flex-col items-center flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
+                                <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow-lg border border-slate-300 crisp-qr">
+                                    <div id="heroCardQr" class="w-20 sm:w-24 h-20 sm:h-24 flex items-center justify-center"></div>
+                                </div>
+                                <span class="text-[7px] sm:text-[8px] font-mono text-cyan-400 font-bold mt-1 tracking-tight">🔍 TAP TO ENLARGE</span>
                             </div>
                         </div>
 
@@ -1989,8 +1988,8 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
 
                                 <!-- High-Contrast Crisp Scannable Large QR -->
                                 <div class="flex flex-col items-center flex-shrink-0 cursor-pointer" @click="openEnlargeQrModal()" title="Click to enlarge scannable QR Code">
-                                    <div class="p-2 bg-white rounded-xl shadow-xl border-2 border-slate-300 crisp-qr">
-                                        <div id="cardQrContainer" class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center"></div>
+                                    <div class="p-2 sm:p-2.5 bg-white rounded-2xl shadow-2xl border-2 border-emerald-400 crisp-qr">
+                                        <div id="cardQrContainer" class="w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center"></div>
                                     </div>
                                     <span class="text-[8px] sm:text-[9px] font-mono text-emerald-400 font-black mt-1 tracking-tight">🔍 TAP TO ENLARGE</span>
                                 </div>
@@ -3191,8 +3190,11 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                                     </div>
                                 </div>
 
-                                <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow crisp-qr flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
-                                    <div id="mintedCardQr" class="w-12 sm:w-14 h-12 sm:h-14 flex items-center justify-center"></div>
+                                <div class="flex flex-col items-center flex-shrink-0 cursor-pointer hover:scale-105 transition" @click="openEnlargeQrModal()" title="Click to enlarge / scan QR Code">
+                                    <div class="p-1 sm:p-1.5 bg-white rounded-xl shadow-lg border border-slate-300 crisp-qr">
+                                        <div id="mintedCardQr" class="w-20 sm:w-24 h-20 sm:h-24 flex items-center justify-center"></div>
+                                    </div>
+                                    <span class="text-[7px] sm:text-[8px] font-mono text-cyan-400 font-bold mt-1 tracking-tight">🔍 TAP TO ENLARGE</span>
                                 </div>
                             </div>
 
@@ -3377,11 +3379,11 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
             </div>
 
             <!-- Crisp Vector QR Display -->
-            <div class="my-3 p-3 sm:p-4 bg-white rounded-2xl shadow-2xl border-4 border-emerald-400 crisp-qr relative group">
-                <div id="enlargedQrContainer" class="w-60 h-60 sm:w-64 sm:h-64 flex items-center justify-center"></div>
+            <div class="my-3 p-4 sm:p-5 bg-white rounded-2xl shadow-2xl border-4 border-emerald-400 crisp-qr relative group">
+                <div id="enlargedQrContainer" class="w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center"></div>
                 <div class="mt-2 text-center">
-                    <span class="text-[10px] font-mono text-slate-700 font-bold tracking-wider uppercase">
-                        SCAN WITH ANY SMARTPHONE CAMERA
+                    <span class="text-[11px] font-mono text-slate-800 font-extrabold tracking-wider uppercase">
+                        📷 POINT ANY SMARTPHONE CAMERA HERE TO SCAN
                     </span>
                 </div>
             </div>
@@ -4118,8 +4120,8 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                             if (QRClass) {
                                 new QRClass(heroContainer, {
                                     text: payload,
-                                    width: 56,
-                                    height: 56,
+                                    width: 96,
+                                    height: 96,
                                     colorDark: "#000000",
                                     colorLight: "#ffffff",
                                     correctLevel: 1
@@ -4130,7 +4132,7 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                         } catch (e) {
                             const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
                             if (SvgGen && SvgGen.generateSVG) {
-                                heroContainer.innerHTML = SvgGen.generateSVG(payload, 56, 1);
+                                heroContainer.innerHTML = SvgGen.generateSVG(payload, 96, 1);
                             } else {
                                 heroContainer.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
                             }
@@ -4564,8 +4566,8 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                                 if (QRClass) {
                                     new QRClass(mintedContainer, {
                                         text: payload,
-                                        width: 56,
-                                        height: 56,
+                                        width: 96,
+                                        height: 96,
                                         colorDark: "#000000",
                                         colorLight: "#ffffff",
                                         correctLevel: 1
@@ -4576,7 +4578,7 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                             } catch(e) {
                                 const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
                                 if (SvgGen && SvgGen.generateSVG) {
-                                    mintedContainer.innerHTML = SvgGen.generateSVG(payload, 56, 1);
+                                    mintedContainer.innerHTML = SvgGen.generateSVG(payload, 96, 1);
                                 } else {
                                     mintedContainer.innerHTML = '<span class="text-[9px] text-slate-900 font-bold">QR</span>';
                                 }
@@ -4900,7 +4902,7 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                     if (window.location.hostname.includes('github.io')) {
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
                         base = `${window.location.origin}${path}/emergency.html`;
-                    } else if (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file')) {
+                    } else if (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
                         let path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
                         base = `${window.location.origin}${path}/emergency.html`;
                     }
@@ -4913,29 +4915,15 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                     }
 
                     const u = this.currentUser || {};
-                    const v = this.liveVitals || {};
-
                     const q = new URLSearchParams();
                     q.set('id', u.health_id || 'AH-2026-8849-IN');
                     q.set('name', u.name || 'Hemanth Kumar');
                     const blood = (u.blood_group || 'O+').replace(/\s*\(.*?\)/, '').trim();
-                    q.set('blood', blood || 'O+');
-                    if (u.phone) q.set('phone', u.phone.replace(/\s+/g, ''));
-                    if (u.dob) q.set('dob', u.dob);
-                    if (u.age) q.set('age', u.age);
-                    if (u.gender) q.set('gender', u.gender);
-                    if (u.emergency_contact) q.set('em', u.emergency_contact.replace(/\s*\(.*?\)/, '').replace(/\s+/g, ''));
-                    if (u.hospital) q.set('hosp', u.hospital.split(',')[0].trim());
-                    if (u.primary_physician) q.set('doc', u.primary_physician.split(',')[0].trim());
-                    if (u.address) q.set('addr', u.address.split(',').slice(-2).join(',').trim() || u.address);
-                    if (u.allergies) {
-                        const allStr = Array.isArray(u.allergies) ? u.allergies.join(',') : u.allergies;
-                        if (allStr) q.set('all', allStr);
+                    if (blood) q.set('blood', blood);
+                    if (u.emergency_contact) {
+                        const em = u.emergency_contact.replace(/\s*\(.*?\)/, '').replace(/[^0-9+]/g, '');
+                        if (em) q.set('em', em);
                     }
-                    if (v && v.temperature) q.set('temp', v.temperature.replace(/\s*°?F/i, '°F'));
-                    if (v && v.blood_pressure) q.set('bp', v.blood_pressure.replace(/\s*mmHg/i, ''));
-                    if (v && v.pulse) q.set('pulse', v.pulse.replace(/\s*bpm/i, ''));
-                    if (v && v.spo2) q.set('spo2', v.spo2.replace(/\s*%/i, '%'));
 
                     return `${base}?${q.toString()}`;
                 },
@@ -5014,8 +5002,8 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                         if (QRClass) {
                             new QRClass(bigContainer, {
                                 text: payload,
-                                width: 256,
-                                height: 256,
+                                width: 288,
+                                height: 288,
                                 colorDark: "#000000",
                                 colorLight: "#ffffff",
                                 correctLevel: corrLevel
@@ -5027,7 +5015,7 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                         console.error("QR Code Generation Error:", e);
                         const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
                         if (SvgGen && SvgGen.generateSVG) {
-                            bigContainer.innerHTML = SvgGen.generateSVG(payload, 256, corrLevel);
+                            bigContainer.innerHTML = SvgGen.generateSVG(payload, 288, corrLevel);
                         }
                     }
                 },
@@ -5047,8 +5035,8 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                         if (QRClass) {
                             new QRClass(container, {
                                 text: payload,
-                                width: 96,
-                                height: 96,
+                                width: 120,
+                                height: 120,
                                 colorDark: "#000000",
                                 colorLight: "#ffffff",
                                 correctLevel: (QRClass.CorrectLevel) ? QRClass.CorrectLevel.L : 1
@@ -5059,7 +5047,7 @@ var AuraQR = (typeof window !== "undefined" && window.AuraQR) ? window.AuraQR : 
                     } catch (e) {
                         const SvgGen = (typeof window !== 'undefined' && window.AuraQR) ? window.AuraQR : (typeof AuraQR !== 'undefined' ? AuraQR : null);
                         if (SvgGen && SvgGen.generateSVG) {
-                            container.innerHTML = SvgGen.generateSVG(payload, 96, 1);
+                            container.innerHTML = SvgGen.generateSVG(payload, 120, 1);
                         } else {
                             container.innerHTML = '<span class="text-[8px] text-slate-800 font-mono font-bold">QR</span>';
                         }

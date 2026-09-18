@@ -31,11 +31,7 @@
             this.parsedData.push(byteArray);
         }
         this.parsedData = Array.prototype.concat.apply([], this.parsedData);
-        if (this.parsedData.length != this.data.length) {
-            this.parsedData.unshift(191);
-            this.parsedData.unshift(187);
-            this.parsedData.unshift(239);
-        }
+
     }
     QR8BitByte.prototype = {
         getLength: function(buffer) {
@@ -764,7 +760,7 @@
         var modCount = qr.getModuleCount();
         var width = this.options.width || 256;
         var height = this.options.height || 256;
-        var margin = 2;
+        var margin = 4;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
@@ -790,7 +786,7 @@
         qr.addData(text);
         qr.make();
         var modCount = qr.getModuleCount();
-        var margin = 2;
+        var margin = 4;
         var viewBoxSize = modCount + (margin * 2);
         
         var rects = [];
